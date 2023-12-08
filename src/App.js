@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import MainMenu from "./components/MainMenu";
+import { Breadcrumb, Layout, Menu, theme } from "antd";
+const { Header, Content, Footer, Sider } = Layout;
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+const App = () => {
+    const {
+        token: { colorBgContainer },
+    } = theme.useToken();
+    return (
+        <Layout
+            style={{
+                minHeight: "100vh",
+            }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
+            <MainMenu />
+            <Layout>
+                <Header style={{ padding: 0, background: colorBgContainer }} />
+                <Content
+                    style={{
+                        margin: "0 16px",
+                    }}
+                >
+                    <Breadcrumb style={{ margin: "16px 0" }} items={[{ title: "User" }, { title: "Bill" }]} />
+                    <div
+                        style={{
+                            padding: 24,
+                            minHeight: 360,
+                            background: colorBgContainer,
+                        }}
+                    >
+                        Bill is a cat.
+                    </div>
+                </Content>
+                <Footer
+                    style={{
+                        textAlign: "center",
+                    }}
+                >
+                    Ant Design ©2023 Created by Ant UED
+                </Footer>
+            </Layout>
+        </Layout>
+    );
+};
 export default App;
