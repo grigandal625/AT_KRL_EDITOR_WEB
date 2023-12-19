@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+djangorestframework = "*"
+django-filter = "*"
+at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
+drf-nested-routers = "*"
+install = "*"
+drf-spectacular = "*"
+
+[dev-packages]
+autopep8 = "*"
+
+[requires]
+python_version = "3.10"
