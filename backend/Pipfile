@@ -11,6 +11,7 @@ at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
 drf-nested-routers = "*"
 install = "*"
 drf-spectacular = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 autopep8 = "*"
