@@ -41,7 +41,7 @@ export default () => {
                 <></>
             )}
             {kbTypesStore.status === loadStatuses.loaded ? (
-                <Row gutter={5}>
+                <Row  style={{ minHeight: "calc(100vh - 395px)"}} gutter={[5, 5]}>
                     <Col md={24} sm={24} xs={24} lg={7} xl={7} xxl={7}>
                         <Card
                             style={{ minHeight: "100%", minWidth: "100%" }}
