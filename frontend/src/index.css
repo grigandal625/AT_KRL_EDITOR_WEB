@@ -1,3 +1,7 @@
 :root {
-    --colorSettingsFill: #d1dae8;
+    /* --colorSettingsFill: #d1dae8; */
+}
+
+.container {
+    padding: 20px;
 }

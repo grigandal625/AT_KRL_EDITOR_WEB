@@ -1,0 +1,20 @@
+.ant-tabs.kb-entity-tabs.tabs-unselected .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+    display: none;
+}
+
+.types-list-title {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding: 5px 0px !important;
+    /* border-bottom: 1px var(--ant-line-type) var(--ant-color-split); */
+}
+
+.sider-divider {
+    padding: 4px;
+    border-right: 1px var(--ant-line-type) var(--ant-color-split);
+    padding-bottom: 0px;
+}
+
+.type-title {
+    margin-top: 5px !important;
+}

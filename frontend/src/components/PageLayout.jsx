@@ -1,7 +1,10 @@
-import MainMenu from "./MainMenu";
+import MainMenu, { PageMenu } from "./MainMenu";
 import { Layout, theme, Typography } from "antd";
 import { Outlet } from "react-router-dom";
 import PageHeader from "../utils/PageHeader";
+import { useState } from "react";
+import mobileCheck from "../utils/mobileCheck";
+
 const { Header, Content, Footer } = Layout;
 
 export default () => {
@@ -9,33 +12,41 @@ export default () => {
     const {
         token: { colorBgContainer },
     } = themeToken;
-    console.log(themeToken);
-    return (
+
+    const [width, setWidth] = useState(80);
+
+    const content = (
+        <Layout style={{ marginLeft: mobileCheck() ? 0 : width, transition: "0.2s" }}>
+            <Header style={{ padding: 0, background: colorBgContainer }}>
+                {mobileCheck() ? <PageMenu /> : <PageHeader title="Редактор базы знаний" />}
+            </Header>
+            <Content
+                style={{
+                    margin: "0 16px",
+                }}
+            >
+                <Outlet />
+            </Content>
+            <Footer
+                style={{
+                    textAlign: "center",
+                }}
+            >
+                Лаборатория «Интеллекутальные системы и технологии» ©2024
+            </Footer>
+        </Layout>
+    );
+
+    return mobileCheck() ? (
+        content
+    ) : (
         <Layout
             style={{
                 minHeight: "100vh",
             }}
         >
-            <MainMenu />
-            <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer }}>
-                    <PageHeader title="Редактор базы знаний" />
-                </Header>
-                <Content
-                    style={{
-                        margin: "0 16px",
-                    }}
-                >
-                    <Outlet />
-                </Content>
-                <Footer
-                    style={{
-                        textAlign: "center",
-                    }}
-                >
-                    Лаборатория «Интеллекутальные системы и технологии» ©2024
-                </Footer>
-            </Layout>
+            {mobileCheck() ? <></> : <MainMenu width={width} setWidth={setWidth} />}
+            {content}
         </Layout>
     );
 };

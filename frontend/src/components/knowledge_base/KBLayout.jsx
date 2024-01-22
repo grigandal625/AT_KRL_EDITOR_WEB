@@ -1,10 +1,11 @@
-import { Tabs, Form, Input, Button, Skeleton, Row, Col, Typography, Collapse } from "antd";
+import { Tabs, Form, Input, Button, Skeleton, Row, Col, Typography, Collapse, Menu } from "antd";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useMatches, Outlet, useParams, Navigate } from "react-router-dom";
-import ThemedContainer from "../../utils/ThemedContainer";
+import ThemedContainer, { ThemedBar } from "../../utils/ThemedContainer";
 import { getKb } from "../../redux/stores/kbSlicer";
 import "./KBLayout.css";
+import AddEntityButton from "./AddEntityButton";
 
 export default () => {
     const matches = useMatches();
@@ -22,77 +23,58 @@ export default () => {
 
     const items = [
         {
+            key: "general",
+            label: (
+                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/`}>
+                    Общие настройки
+                </Link>
+            ),
+        },
+        {
             key: "types",
-            label: <Link to={`/knowledge_bases/${id}/types`}>Типы</Link>,
-            children: <Outlet />,
+            label: (
+                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/types`}>
+                    Типы
+                </Link>
+            ),
         },
         {
             key: "objects",
-            label: <Link to={`/knowledge_bases/${id}/objects`}>Объекты</Link>,
-            children: <Outlet />,
+            label: (
+                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects`}>
+                    Объекты
+                </Link>
+            ),
         },
         {
             key: "rules",
-            label: <Link to={`/knowledge_bases/${id}/rules`}>Правила</Link>,
-            children: <Outlet />,
+            label: (
+                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/rules`}>
+                    Правила
+                </Link>
+            ),
         },
     ];
-    return matches.length < 4 ? (
-        <Navigate to={`/knowledge_bases/${id}/types`} replace />
-    ) : (
+
+    return (
         <ThemedContainer>
             {kbStore.knowledgeBase && kbStore.knowledgeBase.id === parseInt(id) ? (
                 <>
                     <Typography.Title className="kb-title" level={3}>
                         База знаний «{kbStore.knowledgeBase.name}»
                     </Typography.Title>
-                    <Collapse
-                        className="kb-general"
-                        items={[
-                            {
-                                key: "main",
-                                label: "Общие настройки и описание",
-                                children: (
-                                    <Form
-                                        onFinish={(...args) => {
-                                            console.log(...args);
-                                        }}
-                                        layout="vertical"
-                                    >
-                                        <Form.Item
-                                            required
-                                            initialValue={kbStore.knowledgeBase.name}
-                                            name="name"
-                                            label="Имя файла БЗ"
-                                        >
-                                            <Input addonAfter=".kbs" />
-                                        </Form.Item>
-                                        <Form.Item
-                                            initialValue={kbStore.knowledgeBase.problem_area}
-                                            name="problem_area"
-                                            label="Проблемная область"
-                                        >
-                                            <Input />
-                                        </Form.Item>
-                                        <Form.Item
-                                            initialValue={kbStore.knowledgeBase.description}
-                                            name="description"
-                                            label="Описание задач"
-                                        >
-                                            <Input.TextArea style={{ minHeight: 250 }} />
-                                        </Form.Item>
-
-                                        <Form.Item>
-                                            <Button type="primary" htmlType="submit">
-                                                Сохранить
-                                            </Button>
-                                        </Form.Item>
-                                    </Form>
-                                ),
-                            },
-                        ]}
+                    <Menu
+                        className="kb-edit-tabs"
+                        mode="horizontal"
+                        selectedKeys={[kbTab]}
+                        items={items}
+                        tabBarExtraContent={{
+                            right: <AddEntityButton kbTab={kbTab} />,
+                        }}
                     />
-                    <Tabs activeKey={kbTab} items={items} />
+                    <ThemedBar style={{ marginTop: 0, paddingTop: 15 }}>
+                        <Outlet />
+                    </ThemedBar>
                 </>
             ) : (
                 <Skeleton active />

@@ -15,13 +15,13 @@ class KBRelatedMixin:
 
     @property
     def knowledge_base(self):
-        return models.KnowledgeBase.objects.get(self.kwargs['knowledge_base_pk'])
+        return models.KnowledgeBase.objects.get(id=self.kwargs['knowledge_base_pk'])
 
     def perform_create(self, serializer):
         return serializer.save(knowledge_base=self.knowledge_base)
 
 
-class KTypeViewSet(ModelViewSet, KBRelatedMixin):
+class KTypeViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KType.objects.all()
     serializer_class = serializers.KTypeSerializer
 
@@ -42,13 +42,13 @@ class KTypeValueViewSet(ModelViewSet):
 
     @property
     def type(self):
-        return models.KType.objects.get(self.kwargs['k_type_pk'])
+        return models.KType.objects.get(id=self.kwargs['k_type_pk'])
 
     def perform_create(self, serializer):
         return serializer.save(type=self.type)
 
 
-class KObjectViewSet(ModelViewSet, KBRelatedMixin):
+class KObjectViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KObject.objects.all()
     serializer_class = serializers.KObjectSerializer
 
@@ -62,23 +62,23 @@ class KObjectAttributeViewSet(ModelViewSet):
 
     @property
     def object(self):
-        return models.KObject.objects.get(self.kwargs['k_object_pk'])
+        return models.KObject.objects.get(id=self.kwargs['k_object_pk'])
 
     def perform_create(self, serializer):
         return serializer.save(object=self.object)
 
 
-class KEventViewSet(ModelViewSet, KBRelatedMixin):
+class KEventViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KEvent
     serializer_class = serializers.KEventSerializer
 
 
-class KIntervalViewSet(ModelViewSet, KBRelatedMixin):
+class KIntervalViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KInterval
     serializer_class = serializers.KIntervalSerializer
 
 
-class KRuleViewSet(ModelViewSet, KBRelatedMixin):
+class KRuleViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KRule.objects.all()
     serializer_class = serializers.KRuleSerializer
 
@@ -92,7 +92,7 @@ class KRuleInstructionViewSet(ModelViewSet):
 
     @property
     def rule(self):
-        return models.KRule.objects.get(self.kwargs['k_rule_pk'])
+        return models.KRule.objects.get(id=self.kwargs['k_rule_pk'])
 
     def perform_create(self, serializer):
         return serializer.save(rule=self.rule)
@@ -107,7 +107,7 @@ class KRuleElseInstructionViewSet(ModelViewSet):
 
     @property
     def rule(self):
-        return models.KRule.objects.get(self.kwargs['k_rule_pk'])
+        return models.KRule.objects.get(id=self.kwargs['k_rule_pk'])
 
     def perform_create(self, serializer):
         return serializer.save(rule=self.rule)

@@ -2,10 +2,6 @@
     margin-top: 0px;
 }
 
-.ant-collapse.kb-general .ant-collapse-content{
-    background-color: var(--colorSettingsFill);
-}
-
-.ant-collapse.kb-general .ant-input-group-addon{
-    background-color: var(--color-bg-container);
+.kb-edit-tabs a {
+    padding: 20px 0px;
 }

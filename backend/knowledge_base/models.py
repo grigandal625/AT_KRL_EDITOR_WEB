@@ -5,6 +5,8 @@ from django.db import models
 
 class KnowledgeBase(models.Model):
     name = models.CharField(max_length=255)
+    problem_area = models.TextField(null=True, blank=True, default=None)
+    description = models.TextField(null=True, blank=True, default=None)
 
 
 class KType(models.Model):

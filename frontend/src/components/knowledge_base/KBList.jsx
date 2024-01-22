@@ -2,10 +2,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getKbList } from "../../redux/stores/kbListSlicer";
 import { useEffect } from "react";
 import ThemedContainer from "../../utils/ThemedContainer";
-import { Table, Skeleton, Typography } from "antd";
+import { Table, Skeleton, Typography, Button } from "antd";
 import { loadStatuses } from "../../GLOBAL";
 import { Link } from "react-router-dom";
 import "./KBList.css";
+import { FolderOpenOutlined } from "@ant-design/icons";
 
 export default () => {
     const dispatch = useDispatch();
@@ -14,8 +15,17 @@ export default () => {
         dispatch(getKbList());
     }, []);
     const columns = [
-        { title: "Название", dataIndex: "name", key: "name" },
-        { title: "Действия", render: (kb) => <Link to={`/knowledge_bases/${kb.id}`}>Редактировать</Link> },
+        {
+            title: "Название",
+            render: (kb) => (
+                <Link to={`/knowledge_bases/${kb.id}`}>
+                    <Button type="link" icon={<FolderOpenOutlined />}>
+                        {kb.name}
+                    </Button>
+                </Link>
+            ),
+        },
+        { title: "Проблемная область", dataIndex: "problem_area", key: "problem_area" },
     ];
     return (
         <ThemedContainer>
