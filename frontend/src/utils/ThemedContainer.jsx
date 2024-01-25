@@ -1,4 +1,5 @@
 import { theme } from "antd";
+import mobileCheck from "./mobileCheck";
 
 export default ({ children, style, ...props }) => {
     const {
@@ -7,9 +8,9 @@ export default ({ children, style, ...props }) => {
     return (
         <div
             style={{
-                marginTop: 24,
+                marginTop: mobileCheck() ? 15 : 24,
                 height: "100%",
-                padding: 24,
+                padding: mobileCheck() ? 15 : 24,
                 background: colorBgContainer,
                 ...style,
             }}
@@ -27,8 +28,8 @@ export const ThemedBar = ({ children, style, ...props }) => {
     return (
         <div
             style={{
-                marginTop: 24,
-                padding: 24,
+                marginTop: mobileCheck() ? 15 : 24,
+                padding: mobileCheck() ? 15 : 24,
                 background: colorBgContainer,
                 ...style,
             }}

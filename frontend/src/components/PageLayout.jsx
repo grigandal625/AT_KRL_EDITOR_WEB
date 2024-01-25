@@ -21,7 +21,7 @@ export default () => {
                 {mobileCheck() ? <PageMenu /> : <PageHeader title="Редактор базы знаний" />}
             </Header>
             <Content
-                style={{
+                style={mobileCheck() ? {} : {
                     margin: "0 16px",
                 }}
             >

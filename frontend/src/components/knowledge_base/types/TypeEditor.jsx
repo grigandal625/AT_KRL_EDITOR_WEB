@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import mobileCheck from "../../../utils/mobileCheck";
 import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled } from "@ant-design/icons";
 import SymbolicTypeValuesForm from "./values/SymbolicTypeValuesForm";
+import NumericTypeValuesForm from "./values/NumericTypeValuesForm";
 
 export default () => {
     const kbTypesStore = useSelector((state) => state.kbTypes);
@@ -44,6 +45,7 @@ export default () => {
     ];
     const valuesForms = {
         1: <SymbolicTypeValuesForm form={valuesForm} disabled={disabled} />,
+        2: <NumericTypeValuesForm form={valuesForm} disabled={disabled} />,
     };
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>

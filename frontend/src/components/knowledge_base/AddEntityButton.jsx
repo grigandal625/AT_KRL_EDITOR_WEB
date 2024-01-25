@@ -12,12 +12,12 @@ export default ({ kbTab, showTooltip, ...props }) => {
     const navigate = useNavigate();
     const { id } = useParams();
     const {
-        token: { borderRadius },
+        token: { borderRadius, colorPrimary },
     } = theme.useToken();
 
     const showAddTypeDialog = () => {
         const dialog = Modal.confirm({
-            icon: <PlusCircleFilled />,
+            icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
             title: "Добавление типа",
             className: "add-entity-dialog",
             content: (
