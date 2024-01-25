@@ -41,7 +41,6 @@ const kbTypesSlice = createSlice({
             })
             .addCase(createType.fulfilled, (state, action) => {
                 state.types.push(action.payload.type);
-                debugger;
                 action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/types/${action.payload.type.id}`);
             });
     },

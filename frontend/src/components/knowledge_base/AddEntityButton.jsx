@@ -6,7 +6,7 @@ import { PlusCircleFilled, PlusCircleOutlined, PlusOutlined } from "@ant-design/
 import { createType } from "../../redux/stores/kbTypesSlicer";
 import "./AddEntityButton.css";
 
-export default ({ kbTab }) => {
+export default ({ kbTab, showTooltip, ...props }) => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -59,15 +59,12 @@ export default ({ kbTab }) => {
         objects: "Добавить объект",
         rules: "Добавить правило",
     };
-    const icons = {
-        types: <PlusOutlined />,
-        objects: <PlusCircleOutlined />,
-        rules: <PlusCircleOutlined />,
-    };
 
-    return (
+    return showTooltip ? (
         <Tooltip title={captions[kbTab]}>
-            <Button size="small" icon={icons[kbTab]} type="primary" ghost onClick={handlers[kbTab]} />
+            <Button {...props} onClick={handlers[kbTab]} />
         </Tooltip>
+    ) : (
+        <Button {...props} onClick={handlers[kbTab]} />
     );
 };

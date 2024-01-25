@@ -5,7 +5,7 @@ import { useParams, Outlet, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loadStatuses } from "../../../GLOBAL";
 import "./Types.css";
-import { SearchOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import mobileCheck from "../../../utils/mobileCheck";
 import AddEntityButton from "../AddEntityButton";
 
@@ -34,14 +34,14 @@ export default () => {
     const typeList = (
         <>
             <div className="sider-divider">
-                <Row style={{width: 176}} justify="space-between" align="middle">
+                <Row style={{ width: 176 }} justify="space-between" align="middle">
                     <Col>
                         <Typography.Title level={5} className="types-list-title">
                             Список типов
                         </Typography.Title>
                     </Col>
                     <Col>
-                        <AddEntityButton kbTab="types" />
+                        <AddEntityButton size="small" icon={<PlusOutlined />} type="primary" ghost kbTab="types" />
                     </Col>
                 </Row>
                 <Input
@@ -53,11 +53,7 @@ export default () => {
                 />
             </div>
             <Menu
-                style={
-                    mobileCheck()
-                        ? { width: "100%" }
-                        : { maxHeight: "calc(100vh - 378px)", height: "calc(100% - 70px)", overflowY: "scroll" }
-                }
+                style={mobileCheck() ? { width: "100%" } : { maxHeight: "calc(100vh - 378px)", height: "calc(100% - 70px)", overflowY: "scroll" }}
                 items={menuItems}
                 selectedKeys={[typeId]}
                 mode="vertical"
@@ -76,9 +72,7 @@ export default () => {
             )
         ) : (
             <Layout style={{ minHeight: "calc(100vh - 348px)", backgroundColor: colorBgContainer }}>
-                <Layout.Sider style={{ minHeight: "calc(100vh - 348px)", backgroundColor: colorBgContainer }}>
-                    {typeList}
-                </Layout.Sider>
+                <Layout.Sider style={{ minHeight: "calc(100vh - 348px)", backgroundColor: colorBgContainer }}>{typeList}</Layout.Sider>
                 <Layout.Content style={{ minHeight: "100%", backgroundColor: colorBgContainer }}>
                     <Outlet />
                 </Layout.Content>
