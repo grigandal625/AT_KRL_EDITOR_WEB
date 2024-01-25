@@ -6,6 +6,7 @@ import ThemedContainer, { ThemedBar } from "../../utils/ThemedContainer";
 import { getKb } from "../../redux/stores/kbSlicer";
 import "./KBLayout.css";
 import AddEntityButton from "./AddEntityButton";
+import mobileCheck from "../../utils/mobileCheck";
 
 export default () => {
     const matches = useMatches();
@@ -72,7 +73,7 @@ export default () => {
                             right: <AddEntityButton kbTab={kbTab} />,
                         }}
                     />
-                    <ThemedBar style={{ marginTop: 0, paddingTop: 15 }}>
+                    <ThemedBar style={{ marginTop: 0, paddingTop: 15, ...(mobileCheck() ? { paddingLeft: 0, paddingRight: 0 } : {}) }}>
                         <Outlet />
                     </ThemedBar>
                 </>

@@ -33,8 +33,8 @@ export default () => {
 
     const typeList = (
         <>
-            <div className="sider-divider">
-                <Row style={{ width: 176 }} justify="space-between" align="middle">
+            <div className="sider-divider" style={mobileCheck() ? { borderRight: 0 } : {}}>
+                <Row style={mobileCheck() ? {} : { width: 176 }} justify="space-between" align="middle">
                     <Col>
                         <Typography.Title level={5} className="types-list-title">
                             Список типов
@@ -53,7 +53,7 @@ export default () => {
                 />
             </div>
             <Menu
-                style={mobileCheck() ? { width: "100%" } : { maxHeight: "calc(100vh - 378px)", height: "calc(100% - 70px)", overflowY: "scroll" }}
+                style={mobileCheck() ? { width: "100%", borderRight: 0 } : { maxHeight: "calc(100vh - 378px)", height: "calc(100% - 70px)", overflowY: "scroll" }}
                 items={menuItems}
                 selectedKeys={[typeId]}
                 mode="vertical"

@@ -56,20 +56,19 @@ export default () => {
             )}
             {kbTypesStore.status === loadStatuses.loaded ? (
                 <Row style={{ minHeight: "calc(100vh - 395px)" }} gutter={[5, 5]}>
-                    <Col md={24} sm={24} xs={24} lg={7} xl={7} xxl={7}>
+                    <Col xxl={12} xl={12} lg={24} md={24} sm={24} xs={24}>
                         <Card
                             style={{ minHeight: "100%", minWidth: "100%" }}
                             title={
-                                <Row align="middle" justify="space-between">
-                                    <Col>Базовые настройки</Col>
+                                <Row wrap={false} align="middle" justify="space-between">
+                                    <Col>Основные данные</Col>
                                     <Col>
                                         <Space>
-                                            <Button type="primary">Сохранить</Button>
+                                            <Button {...(mobileCheck() ? { size: "small" } : {})} type="primary">
+                                                Сохранить
+                                            </Button>
                                             <Dropdown menu={{ items }} trigger={["click"]}>
-                                                <Button
-                                                    onClick={(e) => e.preventDefault()}
-                                                    icon={<SettingOutlined />}
-                                                />
+                                                <Button {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />} />
                                             </Dropdown>
                                         </Space>
                                     </Col>
@@ -89,7 +88,7 @@ export default () => {
                             />
                         </Card>
                     </Col>
-                    <Col md={24} sm={24} xs={24} lg={17} xl={17} xxl={17} style={5}>
+                    <Col xxl={12} xl={12} lg={24} md={24} sm={24} xs={24}>
                         <Tooltip
                             open={disabled}
                             title={
@@ -102,21 +101,19 @@ export default () => {
                             <Card
                                 style={{ minHeight: "100%", minWidth: "100%" }}
                                 title={
-                                    <Row align="middle" justify="space-between">
+                                    <Row wrap={false} align="middle" justify="space-between">
                                         <Col>Значения</Col>
                                         <Col>
                                             <Button
+                                                {...(mobileCheck() ? { size: "small" } : {})}
                                                 disabled={disabled}
                                                 type="primary"
                                                 onClick={async () => {
                                                     try {
-                                                        await valuesForm.validateFields();
+                                                        const values = await valuesForm.validateFields();
+                                                        console.log(values);
                                                     } catch (e) {
-                                                        e.errorFields.forEach(({ errors }) =>
-                                                            errors.forEach((error) => message.error(error))
-                                                        );
-
-                                                        console.error(e);
+                                                        message.error("Некорректно заполнены данные");
                                                     }
                                                 }}
                                             >
