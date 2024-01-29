@@ -2,6 +2,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from knowledge_base import models
 from knowledge_base import serializers
+from rest_framework.response import Response
+from knowledge_base.service import KBService
 
 
 class KnowledgeBaseViewSet(ModelViewSet):
@@ -19,6 +21,44 @@ class KBRelatedMixin:
 
     def perform_create(self, serializer):
         return serializer.save(knowledge_base=self.knowledge_base)
+    
+
+    @action(methods=['GET'], detail=True)
+    def duplicate(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data.pop('id', None)
+        data['kb_id'] = self.get_free_name(instance)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        new_instance = self.perform_create(serializer)
+        self.duplicate_extras(instance, new_instance)
+        serializer = self.get_serializer(new_instance)
+        return Response(serializer.data)
+    
+    def get_free_name(self, instance):
+        model_class = instance.__class__
+        counter = 1
+        new_name = f'КОПИЯ_{instance.kb_id}'
+        search_name = new_name
+        others = model_class.objects.exclude(pk=instance.pk).filter(knowledge_base=self.knowledge_base, kb_id=search_name)
+        while others.count():
+            search_name = f'{new_name}_{counter}'
+            counter += 1
+            others = model_class.objects.exclude(pk=instance.pk).filter(knowledge_base=self.knowledge_base, kb_id=search_name)
+
+        new_name = search_name
+        return new_name
+
+    def duplicate_extras(self, instance, new_instance):
+        pass
+
+    @action(methods=['GET'], detail=True, serializer_class=serializers.KRLSerializer)
+    def krl(self, *args, **kwargs):
+        instance = self.get_object()
+        entity = KBService.convert(instance)
+        return Response(data={'krl': entity.krl})
 
 
 class KTypeViewSet(KBRelatedMixin, ModelViewSet):
@@ -31,6 +71,23 @@ class KTypeViewSet(KBRelatedMixin, ModelViewSet):
         if validated_data.get('meta', instance.meta) != instance.meta:
             instance.kt_values.all().delete()
         super().perform_update(serializer)
+
+    @action(methods=['PUT'], detail=True, serializer_class=serializers.KTypeSetValuesSerializer)
+    def set_values(self, request, *args, **kwargs):
+        instance: models.KType = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.kt_values.all().delete()
+        serializer.save(type=instance)
+        return Response(data=serializer.data)
+
+    def duplicate_extras(self, instance, new_instance):
+        for value in instance.kt_values.all():
+            models.KTypeValue.objects.create(
+                data=value.data,
+                type=new_instance
+            )
+        return new_instance
 
 
 class KTypeValueViewSet(ModelViewSet):
@@ -69,12 +126,12 @@ class KObjectAttributeViewSet(ModelViewSet):
 
 
 class KEventViewSet(KBRelatedMixin, ModelViewSet):
-    queryset = models.KEvent
+    queryset = models.KEvent.objects.all()
     serializer_class = serializers.KEventSerializer
 
 
 class KIntervalViewSet(KBRelatedMixin, ModelViewSet):
-    queryset = models.KInterval
+    queryset = models.KInterval.objects.all()
     serializer_class = serializers.KIntervalSerializer
 
 

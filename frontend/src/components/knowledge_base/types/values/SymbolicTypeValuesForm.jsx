@@ -4,8 +4,9 @@ import { Button, Form, Row, Col, Typography, theme, Input, Empty, Divider } from
 import { useEffect, useState } from "react";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import mobileCheck from "../../../../utils/mobileCheck";
+import { symbolicTypeValuesValidator } from "../../../../utils/Validators";
 
-export default ({ useDefaultProps, ...props }) => {
+export default ({ ...props }) => {
     const kbTypesStore = useSelector((state) => state.kbTypes);
     const { id, typeId } = useParams();
 
@@ -13,7 +14,7 @@ export default ({ useDefaultProps, ...props }) => {
         token: { colorWarningText },
     } = theme.useToken();
 
-    const type = kbTypesStore.types.find((t) => parseInt(t.id) === parseInt(typeId));
+    const type = kbTypesStore.items.find((t) => parseInt(t.id) === parseInt(typeId));
 
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(false);
@@ -25,21 +26,9 @@ export default ({ useDefaultProps, ...props }) => {
         form,
         disabled,
     };
-    const formProps = useDefaultProps ? defaultProps : props;
+    const formProps = {...defaultProps, ...props};
     const currentForm = formProps.form || form;
-    const validator = () => {
-        const kt_values = currentForm.getFieldValue("kt_values");
-        if (kt_values.length < 2) {
-            return Promise.reject(new Error("Укажите как минимум 2 значения"));
-        }
-        if (kt_values.filter((v) => !v).length) {
-            return Promise.reject(new Error("Не должно быть пустых значений"));
-        }
-        if (kt_values.map((v) => v.data).filter((v, i, arr) => arr.indexOf(v) === i).length !== kt_values.length) {
-            return Promise.reject(new Error("Не должно быть повторяющихся значений"));
-        }
-        return Promise.resolve();
-    };
+    const validator = symbolicTypeValuesValidator(currentForm)
     return (
         <Form {...formProps}>
             <Form.Item name="_check" rules={[{ validator }]}>

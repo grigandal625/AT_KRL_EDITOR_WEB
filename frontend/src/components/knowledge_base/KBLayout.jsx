@@ -5,12 +5,12 @@ import { Link, useMatches, Outlet, useParams, Navigate } from "react-router-dom"
 import ThemedContainer, { ThemedBar } from "../../utils/ThemedContainer";
 import { getKb } from "../../redux/stores/kbSlicer";
 import "./KBLayout.css";
-import AddEntityButton from "./AddEntityButton";
+import AddEntityButton from "../../utils/AddEntityButton";
 import mobileCheck from "../../utils/mobileCheck";
 
 export default () => {
     const matches = useMatches();
-    const kbTabMatch = matches.find((m) => m.data && m.data.kbTab);
+    const kbTabMatch = matches.reverse().find((m) => m.data && m.data.kbTab);
     const kbTab = kbTabMatch ? kbTabMatch.data.kbTab : undefined;
     const { id } = useParams();
 
@@ -21,6 +21,19 @@ export default () => {
             dispatch(getKb(id));
         }
     }, []);
+
+    const objectsTab = mobileCheck()
+        ? [
+              {
+                  key: "objects",
+                  label: (
+                      <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects`}>
+                          Все объекты
+                      </Link>
+                  ),
+              },
+          ]
+        : [];
 
     const items = [
         {
@@ -40,12 +53,46 @@ export default () => {
             ),
         },
         {
-            key: "objects",
-            label: (
-                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects`}>
+            key: mobileCheck() ? "objects_select" : "objects",
+            label: mobileCheck() ? (
+                "Объекты"
+            ) : (
+                <Link className="kb-edit-tab" style={{ color: "inherit" }} to={`/knowledge_bases/${id}/objects`}>
                     Объекты
                 </Link>
             ),
+            children: objectsTab.concat([
+                {
+                    key: "base_objects",
+                    label: (
+                        <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects/base_objects`}>
+                            Базовые объекты
+                        </Link>
+                    ),
+                },
+                {
+                    key: "temporal_objects",
+                    label: "Темпоральные объекты",
+                    children: [
+                        {
+                            key: "intervals",
+                            label: (
+                                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects/intervals`}>
+                                    Интервалы
+                                </Link>
+                            ),
+                        },
+                        {
+                            key: "events",
+                            label: (
+                                <Link className="kb-edit-tab" to={`/knowledge_bases/${id}/objects/events`}>
+                                    События
+                                </Link>
+                            ),
+                        },
+                    ],
+                },
+            ]),
         },
         {
             key: "rules",
@@ -73,9 +120,8 @@ export default () => {
                             right: <AddEntityButton kbTab={kbTab} />,
                         }}
                     />
-                    <ThemedBar style={{ marginTop: 0, paddingTop: 15, ...(mobileCheck() ? { paddingLeft: 0, paddingRight: 0 } : {}) }}>
-                        <Outlet />
-                    </ThemedBar>
+                    <br />
+                    <Outlet />
                 </>
             ) : (
                 <Skeleton active />

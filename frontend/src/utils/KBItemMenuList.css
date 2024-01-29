@@ -2,7 +2,7 @@
     display: none;
 }
 
-.types-list-title {
+.kbitem-list-title {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
     padding: 5px 0px !important;
@@ -15,6 +15,7 @@
     padding-bottom: 0px;
 }
 
-.type-title {
+.kbitem-title {
     margin-top: 5px !important;
+    margin-bottom: 5px !important;
 }

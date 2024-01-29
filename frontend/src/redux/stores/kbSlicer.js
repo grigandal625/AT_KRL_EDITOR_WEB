@@ -20,6 +20,18 @@ export const updateKb = createAsyncThunk("knowledgeBase/update", async ({ id, da
     return response;
 });
 
+export const createKb = createAsyncThunk("knowledgeBase/create", async ({ data, navigate }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const knowledgeBase = await fetchResult.json();
+    return { knowledgeBase, navigate };
+});
+
 const kbSlice = createSlice({
     name: "knowledgeBase",
     initialState: {
@@ -48,6 +60,14 @@ const kbSlice = createSlice({
             })
             .addCase(updateKb.rejected, (state) => {
                 state.status = loadStatuses.error;
+            })
+            .addCase(createKb.pending, (state) => {
+                state.status = loadStatuses.loading;
+            })
+            .addCase(createKb.fulfilled, (state, action) => {
+                state.knowledgeBase = action.payload.knowledgeBase;
+                state.status = loadStatuses.loaded;
+                action.payload.navigate(`/knowledge_bases/${action.payload.knowledgeBase.id}`);
             });
     },
 });

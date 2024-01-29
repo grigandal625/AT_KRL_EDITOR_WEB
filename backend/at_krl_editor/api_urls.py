@@ -13,9 +13,12 @@ kt_router = routers.NestedSimpleRouter(kb_router, 'k_types', lookup='k_type')
 kt_router.register(r'kt_values', views.KTypeValueViewSet)
 
 kb_router.register(r'k_objects', views.KObjectViewSet)
+kb_router.register(r'k_intervals', views.KIntervalViewSet)
+kb_router.register(r'k_events', views.KEventViewSet)
 
 ko_router = routers.NestedSimpleRouter(kb_router, 'k_objects', lookup='k_object')
 ko_router.register(r'ko_attributes', views.KObjectAttributeViewSet)
+
 
 kb_router.register(r'k_rules', views.KRuleViewSet)
 

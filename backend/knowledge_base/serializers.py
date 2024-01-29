@@ -24,6 +24,19 @@ class KTypeValueSerializer(serializers.ModelSerializer):
         exclude = 'type',
 
 
+
+
+class KTypeSetValueInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KTypeValue
+        exclude = 'type',
+        read_only_fields = 'id',
+
+
+class KTypeSetValuesSerializer(serializers.ListSerializer):
+    child = KTypeSetValueInstanceSerializer()
+
+
 class KTypeSerializer(serializers.ModelSerializer):
     kt_values = KTypeValueSerializer(many=True, read_only=True)
 
@@ -77,3 +90,7 @@ class KRuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = KRule
         exclude = 'knowledge_base',
+
+
+class KRLSerializer(serializers.Serializer):
+    krl = serializers.CharField(read_only=True)

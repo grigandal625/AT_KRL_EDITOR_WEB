@@ -1,12 +1,16 @@
 import { Button, Modal, Form, ConfigProvider, theme, Tooltip } from "antd";
-import { useDispatch } from "react-redux";
-import MainTypeForm from "./types/MainTypeForm";
-import { useNavigate, useParams } from "react-router-dom";
-import { PlusCircleFilled, PlusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { createType } from "../../redux/stores/kbTypesSlicer";
+import { Provider, useDispatch } from "react-redux";
+import MainTypeForm from "../components/knowledge_base/types/MainTypeForm";
+import { useMatches, useNavigate, useParams } from "react-router-dom";
+import { PlusCircleFilled } from "@ant-design/icons";
+import { createType } from "../redux/stores/kbTypesSlicer";
 import "./AddEntityButton.css";
+import store from "../redux/store";
 
 export default ({ kbTab, showTooltip, ...props }) => {
+    const matches = useMatches();
+    const kbTabMatch = matches.reverse().find((m) => m.data && m.data.kbTab);
+    kbTab = kbTab || (kbTabMatch ? kbTabMatch.data.kbTab : undefined);
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -21,9 +25,11 @@ export default ({ kbTab, showTooltip, ...props }) => {
             title: "Добавление типа",
             className: "add-entity-dialog",
             content: (
-                <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
-                    <MainTypeForm form={form} />
-                </ConfigProvider>
+                <Provider store={store}>
+                    <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
+                        <MainTypeForm forCreate form={form} />
+                    </ConfigProvider>
+                </Provider>
             ),
             okButtonProps: {
                 style: { borderRadius },

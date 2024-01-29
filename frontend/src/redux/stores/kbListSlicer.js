@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
-import { updateKb } from "./kbSlicer";
+import { createKb, updateKb } from "./kbSlicer";
 
 export const getKbList = createAsyncThunk("kbList/get", async () => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/`);
@@ -34,6 +34,11 @@ const kbListSlice = createSlice({
                 } else {
                     const index = state.knowledgeBases.indexOf(oldKb);
                     state.knowledgeBases[index] = newKb;
+                }
+            })
+            .addCase(createKb.fulfilled, (state, action) => {
+                if (state.status === loadStatuses.loaded) {
+                    state.knowledgeBases = [...state.knowledgeBases, action.payload.knowledgeBase];
                 }
             });
     },

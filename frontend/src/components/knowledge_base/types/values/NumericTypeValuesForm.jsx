@@ -4,8 +4,9 @@ import { Button, Form, Row, Col, Typography, theme, Input, Empty, Divider, Input
 import { useEffect, useState } from "react";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import mobileCheck from "../../../../utils/mobileCheck";
+import { numericTypeValuesValidator } from "../../../../utils/Validators";
 
-export default ({ useDefaultProps, ...props }) => {
+export default ({ ...props }) => {
     const kbTypesStore = useSelector((state) => state.kbTypes);
     const { id, typeId } = useParams();
 
@@ -13,7 +14,7 @@ export default ({ useDefaultProps, ...props }) => {
         token: { colorWarningText },
     } = theme.useToken();
 
-    const type = kbTypesStore.types.find((t) => parseInt(t.id) === parseInt(typeId));
+    const type = kbTypesStore.items.find((t) => parseInt(t.id) === parseInt(typeId));
 
     const [form] = Form.useForm();
     const [disabled, setDisabled] = useState(false);
@@ -25,15 +26,22 @@ export default ({ useDefaultProps, ...props }) => {
         form,
         disabled,
     };
-    const formProps = useDefaultProps ? defaultProps : props;
-
+    const formProps = { ...defaultProps, ...props };
+    const currentForm = formProps.form || form;
+    const validator = numericTypeValuesValidator(currentForm);
     return (
         <Form {...formProps}>
-            <Form.Item name="from" label="От" rules={[{ required: true, message: "Укажите минимальное значение" }]}>
-                <InputNumber style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item name="to" label="До" rules={[{ required: true, message: "Укажите максимальное значение" }]}>
-                <InputNumber style={{ width: "100%" }} />
+            <Form.Item name="_check" rules={[{ validator }]}>
+                <Form.List name="kt_values">
+                    {() => [
+                        <Form.Item name={[0, "data"]} label="От" rules={[{ required: true, message: "Укажите минимальное значение" }]}>
+                            <InputNumber style={{ width: "100%" }} />
+                        </Form.Item>,
+                        <Form.Item name={[1, "data"]} label="До" rules={[{ required: true, message: "Укажите максимальное значение" }]}>
+                            <InputNumber style={{ width: "100%" }} />
+                        </Form.Item>,
+                    ]}
+                </Form.List>
             </Form.Item>
         </Form>
     );
