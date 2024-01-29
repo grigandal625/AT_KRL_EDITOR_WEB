@@ -65,7 +65,7 @@ export const ItemMenu = ({ storeSelector, asSider }) => {
                     placeholder="Поиск..."
                 />
             </div>
-            {kbItems.length ? (
+            {store.status === loadStatuses.loaded ? kbItems.length ? (
                 <Menu
                     style={
                         mobileCheck() || !asSider
@@ -81,7 +81,7 @@ export const ItemMenu = ({ storeSelector, asSider }) => {
                     <br />
                     <Empty description={store.notCreatedLabel} />
                 </>
-            )}
+            ) : <Skeleton active />}
         </>
     );
 };
@@ -103,7 +103,7 @@ export default ({ storeSelector }) => {
     }, []);
 
     return store.status !== loadStatuses.loaded ? (
-        <Skeleton />
+        <Skeleton active />
     ) : kbItems.length ? (
         mobileCheck() ? (
             params[store.itemParamKey] ? (

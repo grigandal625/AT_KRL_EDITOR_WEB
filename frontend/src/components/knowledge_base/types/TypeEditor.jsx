@@ -223,7 +223,7 @@ export default () => {
                     </Col>
                 </Row>
             ) : (
-                <Skeleton />
+                <Skeleton active />
             )}
             <Modal
                 title="Предпросмотр"
@@ -241,7 +241,7 @@ export default () => {
                 {kbTypesStore.krlStatus === loadStatuses.loaded ? (
                     <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbTypesStore.previewKrl} />
                 ) : (
-                    <Skeleton />
+                    <Skeleton active />
                 )}
             </Modal>
         </div>
