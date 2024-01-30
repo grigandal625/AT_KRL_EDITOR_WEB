@@ -28,6 +28,7 @@ import {
     duplicateType,
     loadTypeKrl,
     resetKrl,
+    selectKbTypes,
     setTypeValues,
     updateType,
 } from "../../../redux/stores/kbTypesSlicer";
@@ -35,7 +36,7 @@ import {
 export default () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const kbTypesStore = useSelector((state) => state.kbTypes);
+    const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
     const [form] = Form.useForm();
     const [valuesForm] = Form.useForm();

@@ -4,12 +4,13 @@ import { useState } from "react";
 import { kbIdFormatValidator, uniqueKbIdValidator } from "../../../utils/Validators";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { selectKbTypes } from "../../../redux/stores/kbTypesSlicer";
 
 export default ({ form, showSuffix, forCreate, ...props }) => {
     const {
         token: { colorWarningText },
     } = theme.useToken();
-    const kbTypesStore = useSelector((state) => state.kbTypes);
+    const kbTypesStore = useSelector(selectKbTypes);
     const { typeId } = useParams();
 
     const [open, setOpen] = useState();

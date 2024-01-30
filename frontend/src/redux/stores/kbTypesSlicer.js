@@ -15,8 +15,8 @@ export const createType = createAsyncThunk("kbTypes/create", async ({ id, data, 
         },
         body: JSON.stringify(data),
     });
-    const newType = await fetchResult.json();
-    return { type: newType, navigate, kbId: id };
+    const item = await fetchResult.json();
+    return { item, navigate, kbId: id };
 });
 
 export const updateType = createAsyncThunk("kbTypes/update", async ({ id, typeId, data }) => {
@@ -106,8 +106,8 @@ const kbTypesSlice = createSlice({
                 state.status = loadStatuses.error;
             })
             .addCase(createType.fulfilled, (state, action) => {
-                state.items.push(action.payload.type);
-                action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/types/${action.payload.type.id}`);
+                state.items.push(action.payload.item);
+                action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/types/${action.payload.item.id}`);
             })
             .addCase(updateType.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;

@@ -11,6 +11,8 @@ import { Empty } from "antd";
 import General from "./components/knowledge_base/general/General";
 import TypeEditor from "./components/knowledge_base/types/TypeEditor";
 import NewKB from "./components/knowledge_base/NewKB";
+import BaseObjectEditor from "./components/knowledge_base/objects/base_objects/BaseObjectEditor";
+import BaseObjects from "./components/knowledge_base/objects/base_objects/BaseObjects";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -26,7 +28,10 @@ const router = createBrowserRouter(
                         <Route path=":typeId" element={<TypeEditor />} />
                     </Route>
                     <Route element={<Objects />} loader={() => Object({ kbTab: "objects" })} path="objects">
-                        <Route path="base_objects" loader={() => Object({ kbTab: "base_objects" })} />
+                        <Route path="base_objects" element={<BaseObjects />} loader={() => Object({ kbTab: "base_objects" })}>
+                            <Route path="" element={<Empty description="Выберите объект для редактирования" />}></Route>
+                            <Route path=":objectId" element={<BaseObjectEditor />} />
+                        </Route>
                         <Route path="intervals" loader={() => Object({ kbTab: "intervals" })} />
                         <Route path="events" loader={() => Object({ kbTab: "events" })} />
                     </Route>

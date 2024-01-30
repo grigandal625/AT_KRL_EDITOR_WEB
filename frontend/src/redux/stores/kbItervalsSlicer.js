@@ -7,6 +7,18 @@ export const getKbIntervals = createAsyncThunk("kbIntervals/get", async (id) => 
     return { items, id: parseInt(id) };
 });
 
+export const createInterval = createAsyncThunk("kbIntervals/create", async ({ id, data, navigate }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const item = await fetchResult.json();
+    return { item, navigate, kbId: id };
+});
+
 const kbIntervalsSlice = createSlice({
     name: "kbIntervals",
     initialState: {

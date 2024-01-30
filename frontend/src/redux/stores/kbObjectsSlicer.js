@@ -7,6 +7,30 @@ export const getKbObjects = createAsyncThunk("kbObjects/get", async (id) => {
     return { items, id: parseInt(id) };
 });
 
+export const createObject = createAsyncThunk("kbObjects/create", async ({ id, data, navigate }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const item = await fetchResult.json();
+    return { item, navigate, kbId: id };
+});
+
+export const updateObject = createAsyncThunk("kbObjects/update", async ({ id, objectId, data }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/${objectId}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const object = await fetchResult.json();
+    return object;
+});
+
 const kbObjectsSlice = createSlice({
     name: "kbObjects",
     initialState: {
@@ -24,19 +48,26 @@ const kbObjectsSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(getKbObjects.pending, (state) => {
-            state.status = loadStatuses.loading;
-        })
-        .addCase(getKbObjects.fulfilled, (state, action) => {
-            state.items = action.payload.items;
-            state.kbId = action.payload.id;
-            state.status = loadStatuses.loaded;
-        })
-        .addCase(getKbObjects.rejected, (state) => {
-            state.status = loadStatuses.error;
-        })
-    }
-})
+        builder
+            .addCase(getKbObjects.pending, (state) => {
+                state.status = loadStatuses.loading;
+            })
+            .addCase(getKbObjects.fulfilled, (state, action) => {
+                state.items = action.payload.items;
+                state.kbId = action.payload.id;
+                state.status = loadStatuses.loaded;
+            })
+            .addCase(getKbObjects.rejected, (state) => {
+                state.status = loadStatuses.error;
+            })
+            .addCase(createObject.fulfilled, (state, action) => {
+                state.items.push(action.payload.item);
+                action.payload.navigate(
+                    `/knowledge_bases/${action.payload.kbId}/objects/base_objects/${action.payload.item.id}`
+                );
+            });
+    },
+});
 
 export const selectKbObjects = (state) =>
     Object({

@@ -1,18 +1,15 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Button, Form, Row, Col, Typography, theme, Input, Empty, Divider } from "antd";
+import { Button, Form, Row, Col, Typography, Input, Empty, Divider } from "antd";
 import { useEffect, useState } from "react";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import mobileCheck from "../../../../utils/mobileCheck";
 import { symbolicTypeValuesValidator } from "../../../../utils/Validators";
+import { selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
 
 export default ({ ...props }) => {
-    const kbTypesStore = useSelector((state) => state.kbTypes);
+    const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
-
-    const {
-        token: { colorWarningText },
-    } = theme.useToken();
 
     const type = kbTypesStore.items.find((t) => parseInt(t.id) === parseInt(typeId));
 

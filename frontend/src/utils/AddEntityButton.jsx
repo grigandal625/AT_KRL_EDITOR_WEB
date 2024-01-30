@@ -6,6 +6,8 @@ import { PlusCircleFilled } from "@ant-design/icons";
 import { createType } from "../redux/stores/kbTypesSlicer";
 import "./AddEntityButton.css";
 import store from "../redux/store";
+import MainBaseObjectForm from "../components/knowledge_base/objects/base_objects/MainBaseObjectForm";
+import { createObject } from "../redux/stores/kbObjectsSlicer";
 
 export default ({ kbTab, showTooltip, ...props }) => {
     const matches = useMatches();
@@ -51,18 +53,54 @@ export default ({ kbTab, showTooltip, ...props }) => {
         });
     };
 
-    const showAddObjectDialog = () => {};
+    const showAddObjectDialog = () => {
+        const dialog = Modal.confirm({
+            icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
+            title: "Добавление объекта",
+            className: "add-entity-dialog",
+            content: (
+                <Provider store={store}>
+                    <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
+                        <MainBaseObjectForm forCreate form={form} />
+                    </ConfigProvider>
+                </Provider>
+            ),
+            okButtonProps: {
+                style: { borderRadius },
+                onClick: async () => {
+                    try {
+                        const data = await form.validateFields();
+                        dispatch(createObject({ id, data, navigate }));
+                        dialog.destroy();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+            },
+            okText: "Добавить объект",
+            cancelText: "Отмена",
+            cancelButtonProps: {
+                style: { borderRadius },
+            },
+        });
+    };
+    const showAddIntervalDialog = () => {};
+    const showAddEventDialog = () => {};
     const showAddRuleDialog = () => {};
 
     const handlers = {
         types: showAddTypeDialog,
-        objects: showAddObjectDialog,
+        base_objects: showAddObjectDialog,
+        intervals: showAddIntervalDialog,
+        events: showAddEventDialog,
         rule: showAddRuleDialog,
     };
 
     const captions = {
         types: "Добавить тип",
-        objects: "Добавить объект",
+        base_objects: "Добавить объект",
+        intervals: "Добавить интервал",
+        events: "Добавить событие",
         rules: "Добавить правило",
     };
 

@@ -1,18 +1,13 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Button, Form, Row, Col, Typography, theme, Input, Empty, Divider, InputNumber } from "antd";
+import { Form, InputNumber } from "antd";
 import { useEffect, useState } from "react";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import mobileCheck from "../../../../utils/mobileCheck";
 import { numericTypeValuesValidator } from "../../../../utils/Validators";
+import { selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
 
 export default ({ ...props }) => {
-    const kbTypesStore = useSelector((state) => state.kbTypes);
+    const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
-
-    const {
-        token: { colorWarningText },
-    } = theme.useToken();
 
     const type = kbTypesStore.items.find((t) => parseInt(t.id) === parseInt(typeId));
 
@@ -34,10 +29,18 @@ export default ({ ...props }) => {
             <Form.Item name="_check" rules={[{ validator }]}>
                 <Form.List name="kt_values">
                     {() => [
-                        <Form.Item name={[0, "data"]} label="От" rules={[{ required: true, message: "Укажите минимальное значение" }]}>
+                        <Form.Item
+                            name={[0, "data"]}
+                            label="От"
+                            rules={[{ required: true, message: "Укажите минимальное значение" }]}
+                        >
                             <InputNumber style={{ width: "100%" }} />
                         </Form.Item>,
-                        <Form.Item name={[1, "data"]} label="До" rules={[{ required: true, message: "Укажите максимальное значение" }]}>
+                        <Form.Item
+                            name={[1, "data"]}
+                            label="До"
+                            rules={[{ required: true, message: "Укажите максимальное значение" }]}
+                        >
                             <InputNumber style={{ width: "100%" }} />
                         </Form.Item>,
                     ]}

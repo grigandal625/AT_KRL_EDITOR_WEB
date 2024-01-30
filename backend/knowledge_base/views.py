@@ -109,6 +109,24 @@ class KObjectViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KObject.objects.all()
     serializer_class = serializers.KObjectSerializer
 
+    def duplicate_extras(self, instance, new_instance):
+        for attr in instance.ko_attributes.all():
+            models.KObjectAttribute.objects.create(
+                object=new_instance,
+                kb_id=attr.kb_id,
+                type=attr.type,
+                comment=attr.comment,
+            )
+
+    @action(methods=['PUT'], detail=True, serializer_class=serializers.KObjectSetAttributesSerializer)
+    def set_attributes(self, request, *args, **kwargs):
+        instance: models.KObject = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.ko_attributes.all().delete()
+        serializer.save(object=instance)
+        return Response(data=serializer.data)
+
 
 class KObjectAttributeViewSet(ModelViewSet):
     queryset = models.KObjectAttribute.objects.all()
@@ -138,6 +156,38 @@ class KIntervalViewSet(KBRelatedMixin, ModelViewSet):
 class KRuleViewSet(KBRelatedMixin, ModelViewSet):
     queryset = models.KRule.objects.all()
     serializer_class = serializers.KRuleSerializer
+
+    def duplicate_extras(self, instance, new_instance):
+        for instr in instance.kr_instructions.all():
+            models.KRuleInstruction.objects.create(
+                rule=new_instance,
+                data=instr.data
+            )
+        for else_instr in instance.kr_else_instructions.all():
+            models.KRuleElseInstruction.objects.create(
+                rule=new_instance,
+                data=else_instr.data
+            )
+        return new_instance
+
+    @action(methods=['PUT'], detail=True, serializer_class=serializers.KRuleSetInstructionsSerializer)
+    def set_instructions(self, request, *args, **kwargs):
+        instance: models.KRule = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.kr_instructions.all().delete()
+        serializer.save(rule=instance)
+        return Response(data=serializer.data)
+
+
+    @action(methods=['PUT'], detail=True, serializer_class=serializers.KRuleSetElseInstructionsSerializer)
+    def set_else_instructions(self, request, *args, **kwargs):
+        instance: models.KRule = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.kr_else_instructions.all().delete()
+        serializer.save(rule=instance)
+        return Response(data=serializer.data)
 
 
 class KRuleInstructionViewSet(ModelViewSet):

@@ -24,8 +24,6 @@ class KTypeValueSerializer(serializers.ModelSerializer):
         exclude = 'type',
 
 
-
-
 class KTypeSetValueInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = KTypeValue
@@ -49,6 +47,17 @@ class KObjectAttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = KObjectAttribute
         exclude = 'object',
+
+
+class KObjectSetAttributeInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KObjectAttribute
+        exclude = 'object',
+        read_only_fields = 'id',
+
+
+class KObjectSetAttributesSerializer(serializers.ListSerializer):
+    child = KObjectSetAttributeInstanceSerializer()
 
 
 class KObjectSerializer(serializers.ModelSerializer):
@@ -77,10 +86,32 @@ class KRuleInstructionSerializer(serializers.ModelSerializer):
         exclude = 'rule',
 
 
+class KRuleSetInstructionInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KRuleInstruction
+        exclude = 'rule',
+        read_only_fields = 'id',
+
+
+class KRuleSetInstructionsSerializer(serializers.ListSerializer):
+    child = KRuleSetInstructionInstanceSerializer()
+
+
 class KRuleElseInstructionSerializer(serializers.ModelSerializer):
     class Meta:
         model = KRuleElseInstruction
         exclude = 'rule',
+
+
+class KRuleSetElseInstructionInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KRuleElseInstruction
+        exclude = 'rule',
+        read_only_fields = 'id',
+
+
+class KRuleSetElseInstructionsSerializer(serializers.ListSerializer):
+    child = KRuleSetElseInstructionInstanceSerializer()
 
 
 class KRuleSerializer(serializers.ModelSerializer):
