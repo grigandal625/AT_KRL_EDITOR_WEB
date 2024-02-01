@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
 import { selectKbObjects } from "../../../../redux/stores/kbObjectsSlicer";
 import mobileCheck from "../../../../utils/mobileCheck";
+import AttributesForm from "./AttributesForm";
 import MainBaseObjectForm from "./MainBaseObjectForm";
 
 export default () => {
@@ -98,7 +99,9 @@ export default () => {
                                     </Col>
                                 </Row>
                             }
-                        ></Card>
+                        >
+                            <AttributesForm form={attrsForm} />
+                        </Card>
                     </Col>
                 </Row>
             ) : (

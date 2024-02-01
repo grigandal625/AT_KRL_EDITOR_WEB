@@ -41,3 +41,12 @@ export const numericTypeValuesValidator = (currentForm) => () => {
     } 
     return Promise.resolve();
 };
+
+
+export const baseObjectAttributesValidator = (currentForm) => () => {
+    const kt_attributes = currentForm.getFieldValue("kt_attributes");
+    if (!kt_attributes.length) {
+        return Promise.reject(new Error('Укажите как минимум 1 атрибут'));
+    }
+    return Promise.resolve();
+}
