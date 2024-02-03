@@ -7,11 +7,11 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 django-filter = "*"
-at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
 drf-nested-routers = "*"
 install = "*"
 drf-spectacular = "*"
 django-cors-headers = "*"
+at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
 
 [dev-packages]
 autopep8 = "*"
