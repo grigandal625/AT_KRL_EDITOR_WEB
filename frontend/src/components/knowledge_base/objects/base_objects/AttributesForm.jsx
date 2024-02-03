@@ -2,12 +2,37 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectKbObjects } from "../../../../redux/stores/kbObjectsSlicer";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, Row, Col, Empty, Form, Input, Select, Typography, Divider } from "antd";
+import { Button, Row, Col, Empty, Form, Input, Select, Typography, Divider, Space, Dropdown } from "antd";
 import { getKbTypes, selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
-import { MinusCircleFilled, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { baseObjectAttributesValidator, kbIdFormatValidator, uniqueKbIdValidator } from "../../../../utils/Validators";
+import { MinusCircleOutlined, PlusOutlined, EditOutlined, CheckOutlined } from "@ant-design/icons";
+import { attrUniqueValidator, baseObjectAttributesValidator, kbIdFormatValidator, uniqueKbIdValidator } from "../../../../utils/Validators";
 import mobileCheck from "../../../../utils/mobileCheck";
 import { loadStatuses } from "../../../../GLOBAL";
+
+const AttrTypeSelect = ({ value, onChange, types, id }) => {
+    const items = types.map((t) => Object({ key: parseInt(t.id), label: t.kb_id }));
+    const onClick = ({ key }) => {
+        onChange({ ...value, type: parseInt(key) });
+    };
+    const type = value && value.type ? types.find((t) => parseInt(t.id) === parseInt(value.type)) : undefined;
+    return (
+        <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
+            {type ? (
+                <a style={{ width: "100%" }} href={`/knowledge_bases/${id}/types/${type.id}`} target="_blank">
+                    {type.kb_id}
+                </a>
+            ) : (
+                <Typography.Text type="danger" style={{ whiteSpace: "nowrap" }}>
+                    (тип не указан)
+                </Typography.Text>
+            )}
+
+            <Dropdown trigger="click" menu={{ items, selectedKeys: [value && value.type], onClick }}>
+                <Button type="link" icon={<EditOutlined />} />
+            </Dropdown>
+        </div>
+    );
+};
 
 export default ({ ...props }) => {
     const kbObjectsStore = useSelector(selectKbObjects);
@@ -33,7 +58,7 @@ export default ({ ...props }) => {
     const defaultProps = {
         form,
         disabled,
-        layout: "vertical",
+        layout: "horizontal",
     };
     const formProps = { ...defaultProps, ...props };
     const currentForm = formProps.form || form;
@@ -52,69 +77,61 @@ export default ({ ...props }) => {
                                         </Typography.Title>
                                     </Col>
                                     <Col>
-                                        <Button
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            icon={<PlusOutlined />}
-                                            type="dashed"
-                                            onClick={() => add()}
-                                        >
+                                        <Button {...(mobileCheck() ? { size: "small" } : {})} icon={<PlusOutlined />} type="dashed" onClick={() => add()}>
                                             {mobileCheck() ? "" : "Добавить"}
                                         </Button>
                                     </Col>
                                 </Row>
                                 <Divider style={{ marginTop: 5 }} />
                                 <Form.Item>
-                                    {fields.map((field, index) => (
-                                        <Row align="middle" gutter={[5, 5]} wrap={false}>
-                                            <Col span={7}>
-                                                <Form.Item
-                                                    {...field}
-                                                    rules={[
-                                                        { required: true, message: "Укажите имя атрибута" },
-                                                        { validator: kbIdFormatValidator },
-                                                        {
-                                                            validator: uniqueKbIdValidator(
-                                                                currentForm
-                                                                    .getFieldValue("ko_attributes")
-                                                                    .map((item) => item && item.kb_id)
-                                                            ),
-                                                        },
-                                                    ]}
-                                                    label="Имя"
-                                                    name={[index, "kb_id"]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={7}>
-                                                <Form.Item
-                                                    {...field}
-                                                    label="Тип"
-                                                    rules={[{ required: true, message: "Укажите тип" }]}
-                                                    name={[index, "type"]}
-                                                >
-                                                    <Select
-                                                        style={{ width: "100%" }}
-                                                        options={types.map((t) =>
-                                                            Object({ value: t.id, label: t.kb_id })
-                                                        )}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={9}>
-                                                <Form.Item {...field} label="Комментарий" name={[index, "comment"]}>
-                                                    <Input />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={1}>
-                                                <Button
-                                                    type="link"
-                                                    icon={<MinusCircleOutlined />}
-                                                    onClick={() => remove(index)}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    ))}
+                                    <table style={{ width: "100%" }}>
+                                        <tr>
+                                            <th>Имя атрибута</th>
+                                            <th>Тип</th>
+                                            <th>Комментарий</th>
+                                        </tr>
+                                        {fields.map((field, index) => (
+                                            <tr>
+                                                <td style={{ verticalAlign: "top" }}>
+                                                    <Form.Item
+                                                        {...field}
+                                                        rules={[
+                                                            { required: true, message: "Укажите имя атрибута" },
+                                                            { validator: kbIdFormatValidator },
+                                                            {
+                                                                validator: attrUniqueValidator(currentForm, index)
+                                                            },
+                                                        ]}
+                                                        name={[index, "kb_id"]}
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                </td>
+                                                <td style={{ verticalAlign: "top", textAlign: "center" }}>
+                                                    <Form.Item
+                                                        name={[index, "type"]}
+                                                        {...field}
+                                                        rules={[
+                                                            {
+                                                                validator: (_, value) =>
+                                                                    !value || (value && value.type) ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <AttrTypeSelect types={types} id={id} />
+                                                    </Form.Item>
+                                                </td>
+                                                <td style={{ verticalAlign: "top" }}>
+                                                    <Form.Item {...field} name={[index, "comment"]}>
+                                                        <Input />
+                                                    </Form.Item>
+                                                </td>
+                                                <td style={{ verticalAlign: "top" }}>
+                                                    <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </table>
                                 </Form.Item>
                             </>
                         ) : (

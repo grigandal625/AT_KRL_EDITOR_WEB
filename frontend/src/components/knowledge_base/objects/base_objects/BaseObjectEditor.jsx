@@ -13,7 +13,7 @@ export default () => {
     const { id, objectId } = useParams();
     const kbObjectsStore = useSelector(selectKbObjects);
 
-    const object = kbObjectsStore.items.find((o) => parseInt(o.id) == parseInt(objectId));
+    const object = kbObjectsStore.items.find((o) => parseInt(o.id) === parseInt(objectId));
 
     const [form] = Form.useForm();
     const [attrsForm] = Form.useForm();
@@ -42,6 +42,15 @@ export default () => {
         },
     ];
 
+    const saveAttrs = async () => {
+        try {
+            const data = await attrsForm.validateFields();
+            console.log(data);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
             {object ? (
@@ -53,12 +62,7 @@ export default () => {
                     </Col>
                     <Col>
                         <Dropdown menu={{ items }} trigger={["click"]}>
-                            <Button
-                                type="text"
-                                {...(mobileCheck() ? { size: "small" } : {})}
-                                onClick={(e) => e.preventDefault()}
-                                icon={<SettingOutlined />}
-                            >
+                            <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>
                                 Опции
                             </Button>
                         </Dropdown>
@@ -93,7 +97,7 @@ export default () => {
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Атрибуты</Col>
                                     <Col>
-                                        <Button {...(mobileCheck() ? { size: "small" } : {})} type="primary">
+                                        <Button {...(mobileCheck() ? { size: "small" } : {})} type="primary" onClick={saveAttrs}>
                                             Сохранить
                                         </Button>
                                     </Col>

@@ -1,16 +1,12 @@
 export const kbIdFormatValidator = (_, value) => {
     if (!/^[\wа-яA-Я]+$/.test(value)) {
-        return Promise.reject(
-            new Error(
-                'Имя должно содержать только латинские или кириллические символы, цифры и символ "_" (нижнее подчеркивание)'
-            )
-        );
+        return Promise.reject(new Error('Имя должно содержать только латинские или кириллические символы, цифры и символ "_" (нижнее подчеркивание)'));
     }
     return Promise.resolve();
 };
 
 export const uniqueKbIdValidator = (values) => (_, value) => {
-    if (values.includes(value)) {
+    if (values.includes(value) && value) {
         return Promise.reject(new Error("Данное имя уже существует"));
     }
     return Promise.resolve();
@@ -38,15 +34,23 @@ export const numericTypeValuesValidator = (currentForm) => () => {
         if (_from >= _to) {
             return Promise.reject(new Error('Значение "От" не должно быть больше значения "До"'));
         }
-    } 
+    }
     return Promise.resolve();
 };
 
-
 export const baseObjectAttributesValidator = (currentForm) => () => {
-    const kt_attributes = currentForm.getFieldValue("kt_attributes");
-    if (!kt_attributes.length) {
-        return Promise.reject(new Error('Укажите как минимум 1 атрибут'));
+    const ko_attributes = currentForm.getFieldValue("ko_attributes");
+    if (ko_attributes && !ko_attributes.length) {
+        return Promise.reject(new Error("Укажите как минимум 1 атрибут"));
     }
     return Promise.resolve();
-}
+};
+
+export const attrUniqueValidator = (currentForm, index) => (_, value) => {
+    const ko_attributes = currentForm.getFieldValue("ko_attributes");
+    const attrNames = ko_attributes ? ko_attributes.filter((attr, i) => i !== index).map((attr) => attr && attr.kb_id) : [];
+    if (attrNames.includes(value)) {
+        return Promise.reject(new Error("Найдено повторяющееся имя"));
+    }
+    return Promise.resolve();
+};
