@@ -94,12 +94,12 @@ class KObjectAttrConvertSerializer(serializers.ModelSerializer):
 class KObjectConvertSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='kb_id')
     desc = serializers.CharField(source='comment')
-    group = serializers.CharField(source='group')
+    group = serializers.CharField()
     properties = KObjectAttrConvertSerializer(many=True, source='ko_attributes')
 
     class Meta:
         model = KObject
-        fields = 'id', 'desc', 'properties'
+        fields = 'id', 'desc', 'properties', 'group'
 
 
 class KEventConvertSerializer(serializers.ModelSerializer):

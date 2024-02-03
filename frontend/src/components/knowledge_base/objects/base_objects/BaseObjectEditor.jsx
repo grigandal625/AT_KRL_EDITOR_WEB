@@ -1,17 +1,22 @@
 import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined } from "@ant-design/icons";
-import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card } from "antd";
+import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme } from "antd";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
-import { selectKbObjects } from "../../../../redux/stores/kbObjectsSlicer";
+import { duplicateObject, selectKbObjects, setObjectAttrs, updateObject, deleteObject, resetKrl, loadObjectKrl } from "../../../../redux/stores/kbObjectsSlicer";
 import mobileCheck from "../../../../utils/mobileCheck";
 import AttributesForm from "./AttributesForm";
 import MainBaseObjectForm from "./MainBaseObjectForm";
 
 export default () => {
     const { id, objectId } = useParams();
+    const navigate = useNavigate();
     const kbObjectsStore = useSelector(selectKbObjects);
+    const dispatch = useDispatch();
+    const {
+        token: { borderRadius },
+    } = theme.useToken();
 
     const object = kbObjectsStore.items.find((o) => parseInt(o.id) === parseInt(objectId));
 
@@ -42,10 +47,46 @@ export default () => {
         },
     ];
 
+    const performDelete = () => {
+        Modal.confirm({
+            title: "Удаление объекта",
+            content: (
+                <>
+                    Удалить объект <b>{object.kb_id}</b> ?
+                </>
+            ),
+            style: { borderRadius },
+            onOk: () => {
+                dispatch(deleteObject({ id, objectId, navigate }));
+            },
+            okText: "Удалить",
+            cancelText: "Отмена",
+            okButtonProps: { style: { borderRadius } },
+            cancelButtonProps: { style: { borderRadius } },
+        });
+    };
+    const duplicate = () => dispatch(duplicateObject({ id, objectId, navigate }));
+    const preview = () => dispatch(loadObjectKrl({ id, objectId }));
+
+    const actions = {
+        delete: performDelete,
+        duplicate,
+        preview,
+    };
+
     const saveAttrs = async () => {
         try {
             const data = await attrsForm.validateFields();
-            console.log(data);
+            dispatch(setObjectAttrs({ id, objectId, ...data }));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const saveObj = async () => {
+        try {
+            const data = await form.validateFields();
+            dispatch(updateObject({ id, objectId, data }));
         } catch (e) {
             console.error(e);
         }
@@ -61,7 +102,7 @@ export default () => {
                         </Typography.Title>
                     </Col>
                     <Col>
-                        <Dropdown menu={{ items }} trigger={["click"]}>
+                        <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>
                                 Опции
                             </Button>
@@ -80,7 +121,12 @@ export default () => {
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
                                     <Col>
-                                        <Button {...(mobileCheck() ? { size: "small" } : {})} type="primary">
+                                        <Button
+                                            loading={kbObjectsStore.saveStatus !== loadStatuses.loaded}
+                                            {...(mobileCheck() ? { size: "small" } : {})}
+                                            onClick={saveObj}
+                                            type="primary"
+                                        >
                                             Сохранить
                                         </Button>
                                     </Col>
@@ -97,7 +143,12 @@ export default () => {
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Атрибуты</Col>
                                     <Col>
-                                        <Button {...(mobileCheck() ? { size: "small" } : {})} type="primary" onClick={saveAttrs}>
+                                        <Button
+                                            loading={kbObjectsStore.saveStatus !== loadStatuses.loaded}
+                                            {...(mobileCheck() ? { size: "small" } : {})}
+                                            type="primary"
+                                            onClick={saveAttrs}
+                                        >
                                             Сохранить
                                         </Button>
                                     </Col>
@@ -111,6 +162,21 @@ export default () => {
             ) : (
                 <Skeleton active />
             )}
+            <Modal
+                title="Предпросмотр"
+                style={{ borderRadius }}
+                width={600}
+                okText="Закрыть"
+                onOk={() => dispatch(resetKrl())}
+                onCancel={() => dispatch(resetKrl())}
+                okButtonProps={{ style: { borderRadius } }}
+                open={[loadStatuses.loaded, loadStatuses.loading].includes(kbObjectsStore.krlStatus)}
+                cancelButtonProps={{
+                    style: { display: "none" },
+                }}
+            >
+                {kbObjectsStore.krlStatus === loadStatuses.loaded ? <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbObjectsStore.previewKrl} /> : <Skeleton active />}
+            </Modal>
         </div>
     );
 };

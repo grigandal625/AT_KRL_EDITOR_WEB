@@ -51,7 +51,7 @@ export const deleteType = createAsyncThunk("kbTypes/delete", async ({ id, typeId
         },
         body: JSON.stringify(data),
     });
-    return { id, typeId: parseInt(typeId), navigate };
+    return { id, itemId: parseInt(typeId), navigate };
 });
 
 export const duplicateType = createAsyncThunk("kbTypes/duplicate", async ({ id, typeId, navigate }) => {
@@ -61,8 +61,8 @@ export const duplicateType = createAsyncThunk("kbTypes/duplicate", async ({ id, 
             "Content-Type": "application/json",
         },
     });
-    const newType = await fetchResult.json();
-    return { type: newType, navigate, id };
+    const item = await fetchResult.json();
+    return { item, navigate, id };
 });
 
 export const loadTypeKrl = createAsyncThunk("kbTypes/krl", async ({ id, typeId }) => {
@@ -134,7 +134,7 @@ const kbTypesSlice = createSlice({
             })
             .addCase(deleteType.fulfilled, (state, action) => {
                 action.payload.navigate(`/knowledge_bases/${action.payload.id}/types`);
-                state.items = state.items.filter((t) => t.id !== action.payload.typeId);
+                state.items = state.items.filter((t) => t.id !== action.payload.itemId);
                 state.saveStatus = loadStatuses.loaded;
             })
             .addCase(duplicateType.pending, (state) => {

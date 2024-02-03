@@ -12,9 +12,9 @@ import { loadStatuses } from "../../../../GLOBAL";
 const AttrTypeSelect = ({ value, onChange, types, id }) => {
     const items = types.map((t) => Object({ key: parseInt(t.id), label: t.kb_id }));
     const onClick = ({ key }) => {
-        onChange({ ...value, type: parseInt(key) });
+        onChange(parseInt(key));
     };
-    const type = value && value.type ? types.find((t) => parseInt(t.id) === parseInt(value.type)) : undefined;
+    const type = value ? types.find((t) => parseInt(t.id) === parseInt(value)) : undefined;
     return (
         <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
             {type ? (
@@ -27,7 +27,7 @@ const AttrTypeSelect = ({ value, onChange, types, id }) => {
                 </Typography.Text>
             )}
 
-            <Dropdown trigger="click" menu={{ items, selectedKeys: [value && value.type], onClick }}>
+            <Dropdown trigger="click" menu={{ items, selectedKeys: [value], onClick }}>
                 <Button type="link" icon={<EditOutlined />} />
             </Dropdown>
         </div>
@@ -99,7 +99,7 @@ export default ({ ...props }) => {
                                                             { required: true, message: "Укажите имя атрибута" },
                                                             { validator: kbIdFormatValidator },
                                                             {
-                                                                validator: attrUniqueValidator(currentForm, index)
+                                                                validator: attrUniqueValidator(currentForm, index),
                                                             },
                                                         ]}
                                                         name={[index, "kb_id"]}
@@ -109,13 +109,10 @@ export default ({ ...props }) => {
                                                 </td>
                                                 <td style={{ verticalAlign: "top", textAlign: "center" }}>
                                                     <Form.Item
-                                                        name={[index, "type"]}
                                                         {...field}
+                                                        name={[index, "type"]}
                                                         rules={[
-                                                            {
-                                                                validator: (_, value) =>
-                                                                    !value || (value && value.type) ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
-                                                            },
+                                                            { validator: (_, value) => (!value || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута"))) },
                                                         ]}
                                                     >
                                                         <AttrTypeSelect types={types} id={id} />

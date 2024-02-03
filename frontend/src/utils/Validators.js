@@ -49,7 +49,7 @@ export const baseObjectAttributesValidator = (currentForm) => () => {
 export const attrUniqueValidator = (currentForm, index) => (_, value) => {
     const ko_attributes = currentForm.getFieldValue("ko_attributes");
     const attrNames = ko_attributes ? ko_attributes.filter((attr, i) => i !== index).map((attr) => attr && attr.kb_id) : [];
-    if (attrNames.includes(value)) {
+    if (attrNames.includes(value) && value) {
         return Promise.reject(new Error("Найдено повторяющееся имя"));
     }
     return Promise.resolve();
