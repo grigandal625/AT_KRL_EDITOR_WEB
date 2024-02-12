@@ -13,8 +13,10 @@ import TypeEditor from "./components/knowledge_base/types/TypeEditor";
 import NewKB from "./components/knowledge_base/NewKB";
 import BaseObjectEditor from "./components/knowledge_base/objects/base_objects/BaseObjectEditor";
 import BaseObjects from "./components/knowledge_base/objects/base_objects/BaseObjects";
+import Intervals from "./components/knowledge_base/objects/intervals/Intervals";
+import Events from "./components/knowledge_base/objects/events/Events";
 
-const router = createBrowserRouter(
+export const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="" element={<PageLayout />} errorElement={<NotFound />}>
             <Route path="" element={<About />} />
@@ -32,8 +34,8 @@ const router = createBrowserRouter(
                             <Route path="" element={<Empty description="Выберите объект для редактирования" />}></Route>
                             <Route path=":objectId" element={<BaseObjectEditor />} />
                         </Route>
-                        <Route path="intervals" loader={() => Object({ kbTab: "intervals" })} />
-                        <Route path="events" loader={() => Object({ kbTab: "events" })} />
+                        <Route path="intervals" element={<Intervals />} loader={() => Object({ kbTab: "intervals" })}></Route>
+                        <Route path="events" element={<Events />} loader={() => Object({ kbTab: "events" })}></Route>
                     </Route>
                     <Route element={<Rules />} loader={() => Object({ kbTab: "rules" })} path="rules" />
                 </Route>

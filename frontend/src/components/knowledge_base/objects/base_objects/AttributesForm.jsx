@@ -112,7 +112,10 @@ export default ({ ...props }) => {
                                                         {...field}
                                                         name={[index, "type"]}
                                                         rules={[
-                                                            { validator: (_, value) => (!value || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута"))) },
+                                                            {
+                                                                validator: (_, value) =>
+                                                                    !value || value === "" || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
+                                                            },
                                                         ]}
                                                     >
                                                         <AttrTypeSelect types={types} id={id} />
