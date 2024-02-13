@@ -57,7 +57,7 @@ export const ReferenceInput = ({ value, onChange, simpleMode, forcedKbId }) => {
             if (attrData) {
                 if (currentObjectKbId !== objectData.kb_id || currentAttrKbId !== attrData.kb_id) {
                     const newValue = simpleMode
-                        ? { ...ref, value: `${objectData.kb_id}.${attrData.kb_id}` }
+                        ? { ...ref, Value: `${objectData.kb_id}.${attrData.kb_id}` }
                         : { ...ref, id: objectData.kb_id, ref: { id: attrData.kbId, tag: "ref" } };
                     onChange(newValue);
                 }
