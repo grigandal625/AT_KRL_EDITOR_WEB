@@ -106,7 +106,8 @@ export default ({ kbTab, showTooltip, ...props }) => {
                     try {
                         const data = await form.validateFields();
                         // dispatch(createEvent({ id, data, navigate }));
-                        dialog.destroy();
+                        console.log(data);
+                        // dialog.destroy();
                     } catch (e) {
                         console.error(e);
                     }

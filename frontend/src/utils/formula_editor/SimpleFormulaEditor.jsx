@@ -4,7 +4,7 @@ import { getKbObjects, selectKbObjects } from "../../redux/stores/kbObjectsSlice
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CloseCircleOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
-import { getItemByKey } from "./TreeTools";
+import { ExpressionJSONToTreeItem, getItemByKey, treeItemToExpressionJSON } from "./TreeTools";
 import { operations, temporal } from "../../GLOBAL";
 
 export const ReferenceInput = ({ value, onChange, simpleMode, forcedKbId }) => {
@@ -153,11 +153,10 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
                 currentValueType = typeof currentValue;
             }
         }
-        if (currentValue !== undefined) {
-            if (currentValue !== inputValue || currentValueType !== valueType) {
-                const newValue = simpleMode ? { ...value, tag: simpleTags[valueType], Value: inputValue } : { ...value, content: inputValue };
-                onChange(newValue);
-            }
+
+        if (currentValue !== inputValue || currentValueType !== valueType) {
+            const newValue = simpleMode ? { ...value, tag: simpleTags[valueType], Value: inputValue } : { ...value, content: inputValue };
+            onChange(newValue);
         }
     }, [inputValue, valueType]);
 
@@ -224,6 +223,11 @@ const FormulaTreeItem = ({ item, updateItem, forcedKbId }) => {
             newItem.data = newData;
             newItem.isLeaf = false;
         } else {
+            if (!itemType) {
+                delete newData.value;
+                delete newData.itemType;
+            }
+            newItem.data = newData;
             newItem.children = undefined;
             newItem.isLeaf = true;
         }
@@ -245,7 +249,7 @@ const FormulaTreeItem = ({ item, updateItem, forcedKbId }) => {
                 />
             ) : (
                 <Tooltip title="Сбросить">
-                    <Button onClick={() => setSelectedItemType()} size="small" icon={<CloseCircleOutlined />} type="link" />
+                    <Button onClick={() => onChange()} size="small" icon={<CloseCircleOutlined />} type="link" />
                 </Tooltip>
             )}
             {items[selectedItemType]}
@@ -254,10 +258,11 @@ const FormulaTreeItem = ({ item, updateItem, forcedKbId }) => {
 };
 
 export default ({ value, onChange, forcedKbId }) => {
-    const [formulaTree, setFormulaTree] = useState([{ key: "0" }]);
+    const initialTreeItem = ExpressionJSONToTreeItem(value, true);
+    const [formulaTree, setFormulaTree] = useState(initialTreeItem);
 
     const updateItem = (key, newItem) => {
-        const newTree = [...formulaTree];
+        const newTree = { ...formulaTree };
         const item = getItemByKey(newTree, key);
         for (let k in newItem) {
             item[k] = newItem[k];
@@ -265,12 +270,17 @@ export default ({ value, onChange, forcedKbId }) => {
         setFormulaTree(newTree);
     };
 
+    useEffect(() => {
+        const newValue = treeItemToExpressionJSON(formulaTree, true);
+        onChange(newValue);
+    }, [formulaTree]);
+
     return (
         <div style={{ whiteSpace: "nowrap", overflowX: "scroll", height: "100%" }}>
             <Tree
                 selectable={false}
                 defaultExpandAll={true}
-                treeData={formulaTree}
+                treeData={[formulaTree]}
                 showLine
                 switcherIcon={<DownOutlined />}
                 titleRender={(item) => <FormulaTreeItem forcedKbId={forcedKbId} item={item} updateItem={updateItem} />}
