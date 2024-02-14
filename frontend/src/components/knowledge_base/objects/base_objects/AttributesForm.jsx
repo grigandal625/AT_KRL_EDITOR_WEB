@@ -17,6 +17,13 @@ const AttrTypeSelect = ({ value, onChange, types, id }) => {
     const type = value ? types.find((t) => parseInt(t.id) === parseInt(value)) : undefined;
     return (
         <div style={{ whiteSpace: "nowrap", marginLeft: 10 }}>
+            {mobileCheck() ? (
+                <Dropdown trigger="click" menu={{ items, selectedKeys: [value], onClick }}>
+                    <Button type="link" icon={<EditOutlined />} />
+                </Dropdown>
+            ) : (
+                <></>
+            )}
             {type ? (
                 <a style={{ width: "100%" }} href={`/knowledge_bases/${id}/types/${type.id}`} target="_blank">
                     {type.kb_id}
@@ -26,10 +33,13 @@ const AttrTypeSelect = ({ value, onChange, types, id }) => {
                     (тип не указан)
                 </Typography.Text>
             )}
-
-            <Dropdown trigger="click" menu={{ items, selectedKeys: [value], onClick }}>
-                <Button type="link" icon={<EditOutlined />} />
-            </Dropdown>
+            {!mobileCheck() ? (
+                <Dropdown trigger="click" menu={{ items, selectedKeys: [value], onClick }}>
+                    <Button type="link" icon={<EditOutlined />} />
+                </Dropdown>
+            ) : (
+                <></>
+            )}
         </div>
     );
 };
@@ -84,54 +94,68 @@ export default ({ ...props }) => {
                                 </Row>
                                 <Divider style={{ marginTop: 5 }} />
                                 <Form.Item>
-                                    <table style={{ width: "100%" }}>
-                                        <tr>
-                                            <th>Имя атрибута</th>
-                                            <th>Тип</th>
-                                            <th>Комментарий</th>
-                                        </tr>
-                                        {fields.map((field, index) => (
+                                    <div style={{ overflowX: "scroll" }}>
+                                        <table style={{ width: "100%", minWidth: 450 }}>
                                             <tr>
-                                                <td style={{ verticalAlign: "top" }}>
-                                                    <Form.Item
-                                                        {...field}
-                                                        rules={[
-                                                            { required: true, message: "Укажите имя атрибута" },
-                                                            { validator: kbIdFormatValidator },
-                                                            {
-                                                                validator: attrUniqueValidator(currentForm, index),
-                                                            },
-                                                        ]}
-                                                        name={[index, "kb_id"]}
-                                                    >
-                                                        <Input />
-                                                    </Form.Item>
-                                                </td>
-                                                <td style={{ verticalAlign: "top", textAlign: "center" }}>
-                                                    <Form.Item
-                                                        {...field}
-                                                        name={[index, "type"]}
-                                                        rules={[
-                                                            {
-                                                                validator: (_, value) =>
-                                                                    !value || value === "" || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <AttrTypeSelect types={types} id={id} />
-                                                    </Form.Item>
-                                                </td>
-                                                <td style={{ verticalAlign: "top" }}>
-                                                    <Form.Item {...field} name={[index, "comment"]}>
-                                                        <Input />
-                                                    </Form.Item>
-                                                </td>
-                                                <td style={{ verticalAlign: "top" }}>
-                                                    <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                                </td>
+                                                {mobileCheck() ? <th></th> : <></>}
+                                                <th>Имя атрибута</th>
+                                                <th>Тип</th>
+                                                <th>Комментарий</th>
                                             </tr>
-                                        ))}
-                                    </table>
+                                            {fields.map((field, index) => (
+                                                <tr>
+                                                    {mobileCheck() ? (
+                                                        <td style={{ verticalAlign: "top" }}>
+                                                            <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
+                                                        </td>
+                                                    ) : (
+                                                        <></>
+                                                    )}
+                                                    <td style={{ verticalAlign: "top" }}>
+                                                        <Form.Item
+                                                            {...field}
+                                                            rules={[
+                                                                { required: true, message: "Укажите имя атрибута" },
+                                                                { validator: kbIdFormatValidator },
+                                                                {
+                                                                    validator: attrUniqueValidator(currentForm, index),
+                                                                },
+                                                            ]}
+                                                            name={[index, "kb_id"]}
+                                                        >
+                                                            <Input />
+                                                        </Form.Item>
+                                                    </td>
+                                                    <td style={{ verticalAlign: "top", textAlign: "center" }}>
+                                                        <Form.Item
+                                                            {...field}
+                                                            name={[index, "type"]}
+                                                            rules={[
+                                                                {
+                                                                    validator: (_, value) =>
+                                                                        !value || value === "" || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
+                                                                },
+                                                            ]}
+                                                        >
+                                                            <AttrTypeSelect types={types} id={id} />
+                                                        </Form.Item>
+                                                    </td>
+                                                    <td style={{ verticalAlign: "top" }}>
+                                                        <Form.Item {...field} name={[index, "comment"]}>
+                                                            <Input />
+                                                        </Form.Item>
+                                                    </td>
+                                                    {!mobileCheck() ? (
+                                                        <td style={{ verticalAlign: "top" }}>
+                                                            <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
+                                                        </td>
+                                                    ) : (
+                                                        <></>
+                                                    )}
+                                                </tr>
+                                            ))}
+                                        </table>
+                                    </div>
                                 </Form.Item>
                             </>
                         ) : (

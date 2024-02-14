@@ -1,22 +1,9 @@
-import {
-    Tree,
-    Select,
-    Space,
-    Input,
-    InputNumber,
-    Checkbox,
-    Radio,
-    TreeSelect,
-    Button,
-    Tooltip,
-    Typography,
-    Dropdown,
-} from "antd";
+import { Tree, Select, Space, Input, InputNumber, Checkbox, TreeSelect, Button, Tooltip, Typography, Dropdown } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getKbObjects, selectKbObjects } from "../../redux/stores/kbObjectsSlicer";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { CloseCircleOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, DownOutlined } from "@ant-design/icons";
 import { ExpressionJSONToTreeItem, getAllKeys, getItemByKey, treeItemToExpressionJSON } from "./TreeTools";
 import { operations, temporal } from "../../GLOBAL";
 
@@ -48,8 +35,7 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
     const attrData = objectData && objectData.ko_attributes.find((attr) => attr.kb_id === currentAttrKbId);
 
     const objectOptions = kbObjectsStore.items.map((obj) => Object({ value: obj.id, key: obj.id, label: obj.kb_id }));
-    const attrOptions =
-        (objectData && objectData.ko_attributes.map((attr) => Object({ value: attr.id, label: attr.kb_id }))) || [];
+    const attrOptions = (objectData && objectData.ko_attributes.map((attr) => Object({ value: attr.id, label: attr.kb_id }))) || [];
 
     const selectedObject = objectData && objectData.id;
     const selectedAttr = attrData && attrData.id;
@@ -57,9 +43,7 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
     const onRefChange = (objectId, attrId) => {
         const ref = simpleMode ? { ...value, tag: "Attribute" } : { ...value, tag: "ref" };
         const currentObjectKbId = simpleMode ? ref.Value && ref.Value.split(".")[0] : ref.id;
-        const currentAttrKbId = simpleMode
-            ? ref.Value && ref.Value.split(".")[1]
-            : (ref.ref && ref.ref.id) || undefined;
+        const currentAttrKbId = simpleMode ? ref.Value && ref.Value.split(".")[1] : (ref.ref && ref.ref.id) || undefined;
 
         const newObjectData = kbObjectsStore.items.find((obj) => obj.id === objectId);
         const newAttrData = newObjectData && newObjectData.ko_attributes.find((attr) => attr.id === attrId);
@@ -70,16 +54,12 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
         if (newObjectData) {
             if (newAttrData) {
                 if (currentObjectKbId !== newObjectKbId || currentAttrKbId !== newAttrKbId) {
-                    const newValue = simpleMode
-                        ? { ...ref, Value: `${newObjectKbId}.${newAttrKbId}` }
-                        : { ...ref, id: newObjectKbId, ref: { id: newAttrKbId, tag: "ref" } };
+                    const newValue = simpleMode ? { ...ref, Value: `${newObjectKbId}.${newAttrKbId}` } : { ...ref, id: newObjectKbId, ref: { id: newAttrKbId, tag: "ref" } };
                     onChange(newValue);
                 }
             } else {
                 if (currentObjectKbId !== newObjectKbId) {
-                    const newValue = simpleMode
-                        ? { ...ref, Value: newObjectKbId }
-                        : { ...ref, id: newObjectKbId, ref: undefined };
+                    const newValue = simpleMode ? { ...ref, Value: newObjectKbId } : { ...ref, id: newObjectKbId, ref: undefined };
                     onChange(newValue);
                 }
             }
@@ -159,13 +139,7 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
 
     const valueInputs = {
         string: (
-            <Input
-                size="small"
-                style={{ minWidth: 100 }}
-                placeholder="Введите символьное значение"
-                value={inputValue}
-                onChange={(e) => updateValue(valueType, e.target.value)}
-            />
+            <Input size="small" style={{ minWidth: 100 }} placeholder="Введите символьное значение" value={inputValue} onChange={(e) => updateValue(valueType, e.target.value)} />
         ),
         number: (
             <InputNumber
@@ -216,9 +190,7 @@ const FormulaTreeItem = ({ item, updateItem }) => {
                 const oldOperation = operations[data.itemType];
                 const newOperation = operations[itemType];
                 if (!newItem.children) {
-                    newItem.children = newOperation.is_binary
-                        ? [{ key: item.key + "-0" }, { key: item.key + "-1" }]
-                        : [{ key: item.key + "-0" }];
+                    newItem.children = newOperation.is_binary ? [{ key: item.key + "-0" }, { key: item.key + "-1" }] : [{ key: item.key + "-0" }];
                 } else if (oldOperation && oldOperation.is_binary && !newOperation.is_binary) {
                     newItem.children = [newItem.children[0]];
                 } else if (oldOperation && !oldOperation.is_binary && newOperation.is_binary) {
@@ -262,12 +234,7 @@ const FormulaTreeItem = ({ item, updateItem }) => {
                 />
             ) : (
                 <Tooltip title="Сбросить">
-                    <Button
-                        onClick={() => onVChange(undefined, itemValue)}
-                        size="small"
-                        icon={<CloseCircleOutlined />}
-                        type="link"
-                    />
+                    <Button onClick={() => onVChange(undefined, itemValue)} size="small" icon={<CloseCircleOutlined />} type="link" />
                 </Tooltip>
             )}
             {items[itemType]}
@@ -292,6 +259,9 @@ export default ({ value, onChange }) => {
     };
 
     useEffect(() => {
+        if (value === undefined) {
+            setAllow(true);
+        }
         if (allow && value !== undefined) {
             setExpandedKeys(allKeys);
             setAllow(false);
@@ -299,7 +269,7 @@ export default ({ value, onChange }) => {
     }, [value]);
 
     return (
-        <div style={{ whiteSpace: "nowrap", overflowX: "scroll", height: "100%" }}>
+        <div style={{ whiteSpace: "nowrap", overflowX: "scroll", overflowY: "hidden", height: "100%" }}>
             <Tree
                 style={{ minHeight: 150 }}
                 selectable={false}
@@ -308,7 +278,6 @@ export default ({ value, onChange }) => {
                 showLine
                 switcherIcon={<DownOutlined />}
                 onExpand={(expandedKeys, info) => {
-                    debugger;
                     setExpandedKeys(expandedKeys);
                 }}
                 titleRender={(item) => <FormulaTreeItem item={item} updateItem={updateItem} />}
