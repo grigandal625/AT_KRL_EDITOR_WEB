@@ -69,13 +69,18 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
                 treeItem.isLeaf = true;
             } else if (["EqOp", "LogOp", "ArOp"].includes(expression.tag)) {
                 const sign = expression.Value.toLowerCase();
-                const itemType = Object.keys(operations).find((k) => operations[k].values.includes(sign));
+                const itemType = Object.keys(operations).find(
+                    (k) => operations[k].values.includes(sign) && ["math", "log", "eq"].includes(operations[k].meta)
+                );
                 const operationDesc = operations[itemType];
                 treeItem.isLeaf = false;
                 treeItem.data = { itemType };
                 treeItem.children = [ExpressionJSONToTreeItem(expression.left, simpleMode, key)];
                 if (operationDesc.is_binary) {
-                    treeItem.children = [...treeItem.children, ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1")];
+                    treeItem.children = [
+                        ...treeItem.children,
+                        ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1"),
+                    ];
                 }
             }
         } else {
@@ -88,7 +93,10 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
                 treeItem.isLeaf = false;
                 treeItem.children = [ExpressionJSONToTreeItem(expression.left, simpleMode, key)];
                 if (operationDesc.is_binary) {
-                    treeItem.children = [...treeItem.children, ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1")];
+                    treeItem.children = [
+                        ...treeItem.children,
+                        ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1"),
+                    ];
                 }
             } else if (["ref", "value"].includes(expression.tag)) {
                 treeItem.data.value = expression;
@@ -102,3 +110,8 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
     }
     return treeItem;
 };
+
+export const getAllKeys = ({ key, children }) => [
+    key,
+    ...(children ? children.reduce((accumulator, child) => [...accumulator, ...getAllKeys(child)], []) : []),
+];

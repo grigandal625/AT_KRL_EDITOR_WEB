@@ -43,15 +43,15 @@ class KObjectAttribute(models.Model):
 class KEvent(models.Model):
     kb_id = models.CharField(max_length=255)
     knowledge_base = models.ForeignKey(to=KnowledgeBase, on_delete=models.CASCADE, related_name='k_events')
-    occurance_condition = models.JSONField()
+    occurance_condition = models.JSONField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
 
 class KInterval(models.Model):
     kb_id = models.CharField(max_length=255)
     knowledge_base = models.ForeignKey(to=KnowledgeBase, on_delete=models.CASCADE, related_name='k_intervals')
-    open = models.JSONField()
-    close = models.JSONField()
+    open = models.JSONField(null=True, blank=True)
+    close = models.JSONField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
 

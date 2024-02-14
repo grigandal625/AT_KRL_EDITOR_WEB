@@ -2,9 +2,65 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 
 export const getKbEvents = createAsyncThunk("kbEvents/get", async (id) => {
-    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/`);
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/`);
     const items = await fetchResult.json();
     return { items, id: parseInt(id) };
+});
+
+export const createEvent = createAsyncThunk("kbEvents/create", async ({ id, data, navigate }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const item = await fetchResult.json();
+    return { item, navigate, kbId: id };
+});
+
+export const updateEvent = createAsyncThunk("kbEvents/update", async ({ id, eventId, data }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const event = await fetchResult.json();
+    return event;
+});
+
+export const deleteEvent = createAsyncThunk("kbEvents/delete", async ({ id, eventId, navigate }) => {
+    await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    return { id, itemId: parseInt(eventId), navigate };
+});
+
+export const duplicateEvent = createAsyncThunk("kbEvents/duplicate", async ({ id, eventId, navigate }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/duplicate/`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    const item = await fetchResult.json();
+    return { item, navigate, id };
+});
+
+export const loadEventKrl = createAsyncThunk("kbEvents/krl", async ({ id, eventId }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/krl/`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    const { krl } = await fetchResult.json();
+    return krl;
 });
 
 const kbEventsSlice = createSlice({
@@ -35,6 +91,41 @@ const kbEventsSlice = createSlice({
             })
             .addCase(getKbEvents.rejected, (state) => {
                 state.status = loadStatuses.error;
+            })
+            .addCase(createEvent.fulfilled, (state, action) => {
+                state.items.push(action.payload.item);
+                action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/objects/events/${action.payload.item.id}`);
+            })
+            .addCase(deleteEvent.pending, (state) => {
+                state.saveStatus = loadStatuses.loading;
+            })
+            .addCase(deleteEvent.fulfilled, (state, action) => {
+                action.payload.navigate(`/knowledge_bases/${action.payload.id}/objects/events`);
+                state.items = state.items.filter((t) => t.id !== action.payload.itemId);
+                state.saveStatus = loadStatuses.loaded;
+            })
+            .addCase(updateEvent.pending, (state) => {
+                state.saveStatus = loadStatuses.loading;
+            })
+            .addCase(updateEvent.fulfilled, (state, action) => {
+                const index = state.items.map((t) => t.id).indexOf(action.payload.id);
+                state.items[index] = action.payload;
+                state.saveStatus = loadStatuses.loaded;
+            })
+            .addCase(duplicateEvent.pending, (state) => {
+                state.status = loadStatuses.loading;
+            })
+            .addCase(duplicateEvent.fulfilled, (state, action) => {
+                state.items.push(action.payload.item);
+                state.status = loadStatuses.loaded;
+                action.payload.navigate(`/knowledge_bases/${action.payload.id}/objects/events/${action.payload.item.id}`);
+            })
+            .addCase(loadEventKrl.pending, (state) => {
+                state.krlStatus = loadStatuses.loading;
+            })
+            .addCase(loadEventKrl.fulfilled, (state, action) => {
+                state.previewKrl = action.payload;
+                state.krlStatus = loadStatuses.loaded;
             });
     },
 });

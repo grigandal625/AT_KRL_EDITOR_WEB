@@ -10,6 +10,7 @@ import MainBaseObjectForm from "../components/knowledge_base/objects/base_object
 import { createObject } from "../redux/stores/kbObjectsSlicer";
 import MainEventForm from "../components/knowledge_base/objects/events/MainEventForm";
 import { router } from "../App";
+import { createEvent } from "../redux/stores/kbEventsSlicer";
 
 export default ({ kbTab, showTooltip, ...props }) => {
     const matches = useMatches();
@@ -92,11 +93,10 @@ export default ({ kbTab, showTooltip, ...props }) => {
             icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
             title: "Добавление события",
             className: "add-entity-dialog",
-            width: 900,
             content: (
                 <Provider store={store}>
                     <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
-                        <MainEventForm forcedKbId={id} layout="vertical" forCreate form={form} />
+                        <MainEventForm layout="vertical" forCreate form={form} />
                     </ConfigProvider>
                 </Provider>
             ),
@@ -105,9 +105,8 @@ export default ({ kbTab, showTooltip, ...props }) => {
                 onClick: async () => {
                     try {
                         const data = await form.validateFields();
-                        // dispatch(createEvent({ id, data, navigate }));
-                        console.log(data);
-                        // dialog.destroy();
+                        dispatch(createEvent({ id, data, navigate }));
+                        dialog.destroy();
                     } catch (e) {
                         console.error(e);
                     }

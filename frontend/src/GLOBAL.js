@@ -15,7 +15,7 @@ const operations = {
     or: { label: "||", values: ["|", "||", "or"], is_binary: true, meta: "log" },
     not: { label: "not", values: ["~", "!", "not"], is_binary: false, meta: "log" },
     xor: { values: ["xor"], is_binary: true, meta: "log" },
-    neg: { values: ["-", "neg"], is_binary: false, meta: "super_math" },
+    neg: { label: '-(...)', values: ["-", "neg"], is_binary: false, meta: "super_math" },
     add: { values: ["+", "add"], is_binary: true, meta: "math" },
     sub: { values: ["-", "sub"], is_binary: true, meta: "math" },
     mul: { values: ["*", "mul"], is_binary: true, meta: "math" },

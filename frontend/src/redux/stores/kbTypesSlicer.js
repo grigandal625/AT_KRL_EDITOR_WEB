@@ -141,7 +141,7 @@ const kbTypesSlice = createSlice({
                 state.status = loadStatuses.loading;
             })
             .addCase(duplicateType.fulfilled, (state, action) => {
-                state.items.push(action.payload.type);
+                state.items.push(action.payload.item);
                 state.status = loadStatuses.loaded;
                 action.payload.navigate(`/knowledge_bases/${action.payload.id}/types/${action.payload.type.id}`);
             })

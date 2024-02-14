@@ -2,10 +2,9 @@ import { useSelector } from "react-redux";
 import { selectkbEvents } from "../../../../redux/stores/kbEventsSlicer";
 import { useParams } from "react-router-dom";
 import { Form, Input } from "antd";
-import SimpleFormulaEditor from "../../../../utils/formula_editor/SimpleFormulaEditor";
 import { kbIdFormatValidator, uniqueKbIdValidator } from "../../../../utils/Validators";
 
-export default ({ form, forCreate, forcedKbId, ...props }) => {
+export default ({ form, forCreate, ...props }) => {
     const kbEventsStore = useSelector(selectkbEvents);
     const { eventId } = useParams();
     const eventNames = kbEventsStore.items.filter((e) => (forCreate ? true : e.id !== parseInt(eventId))).map((e) => e.kb_id);
@@ -19,8 +18,8 @@ export default ({ form, forCreate, forcedKbId, ...props }) => {
             >
                 <Input />
             </Form.Item>
-            <Form.Item name="Formula" label="Условие возникновения">
-                <SimpleFormulaEditor forcedKbId={forcedKbId} />
+            <Form.Item name="comment" label="Комментарий">
+                <Input.TextArea />
             </Form.Item>
         </Form>
     );

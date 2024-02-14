@@ -50,8 +50,8 @@ export const duplicateObject = createAsyncThunk("kbObjects/duplicate", async ({ 
             "Content-Type": "application/json",
         },
     });
-    const newObject = await fetchResult.json();
-    return { object: newObject, navigate, id };
+    const item = await fetchResult.json();
+    return { item, navigate, id };
 });
 
 export const deleteObject = createAsyncThunk('kbObjects/delete', async ({ id, objectId, navigate }) => {
@@ -131,7 +131,7 @@ const kbObjectsSlice = createSlice({
                 state.status = loadStatuses.loading;
             })
             .addCase(duplicateObject.fulfilled, (state, action) => {
-                state.items.push(action.payload.object);
+                state.items.push(action.payload.item);
                 state.status = loadStatuses.loaded;
                 action.payload.navigate(`/knowledge_bases/${action.payload.id}/objects/base_objects/${action.payload.object.id}`);
             }).addCase(deleteObject.pending, (state) => {

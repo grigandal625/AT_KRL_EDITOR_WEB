@@ -15,6 +15,7 @@ import BaseObjectEditor from "./components/knowledge_base/objects/base_objects/B
 import BaseObjects from "./components/knowledge_base/objects/base_objects/BaseObjects";
 import Intervals from "./components/knowledge_base/objects/intervals/Intervals";
 import Events from "./components/knowledge_base/objects/events/Events";
+import EventEditor from "./components/knowledge_base/objects/events/EventEditor";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -35,7 +36,10 @@ export const router = createBrowserRouter(
                             <Route path=":objectId" element={<BaseObjectEditor />} />
                         </Route>
                         <Route path="intervals" element={<Intervals />} loader={() => Object({ kbTab: "intervals" })}></Route>
-                        <Route path="events" element={<Events />} loader={() => Object({ kbTab: "events" })}></Route>
+                        <Route path="events" element={<Events />} loader={() => Object({ kbTab: "events" })}>
+                            <Route path="" element={<Empty description="Выберите событие для редактирования" />}></Route>
+                            <Route path=":eventId" element={<EventEditor />} />
+                        </Route>
                     </Route>
                     <Route element={<Rules />} loader={() => Object({ kbTab: "rules" })} path="rules" />
                 </Route>
