@@ -16,6 +16,7 @@ import BaseObjects from "./components/knowledge_base/objects/base_objects/BaseOb
 import Intervals from "./components/knowledge_base/objects/intervals/Intervals";
 import Events from "./components/knowledge_base/objects/events/Events";
 import EventEditor from "./components/knowledge_base/objects/events/EventEditor";
+import IntervalEditor from "./components/knowledge_base/objects/intervals/IntervalEditor";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -31,13 +32,26 @@ export const router = createBrowserRouter(
                         <Route path=":typeId" element={<TypeEditor />} />
                     </Route>
                     <Route element={<Objects />} loader={() => Object({ kbTab: "objects" })} path="objects">
-                        <Route path="base_objects" element={<BaseObjects />} loader={() => Object({ kbTab: "base_objects" })}>
+                        <Route
+                            path="base_objects"
+                            element={<BaseObjects />}
+                            loader={() => Object({ kbTab: "base_objects" })}
+                        >
                             <Route path="" element={<Empty description="Выберите объект для редактирования" />}></Route>
                             <Route path=":objectId" element={<BaseObjectEditor />} />
                         </Route>
-                        <Route path="intervals" element={<Intervals />} loader={() => Object({ kbTab: "intervals" })}></Route>
+                        <Route path="intervals" element={<Intervals />} loader={() => Object({ kbTab: "intervals" })}>
+                            <Route
+                                path=""
+                                element={<Empty description="Выберите интервал для редактирования" />}
+                            ></Route>
+                            <Route path=":intervalId" element={<IntervalEditor />} />
+                        </Route>
                         <Route path="events" element={<Events />} loader={() => Object({ kbTab: "events" })}>
-                            <Route path="" element={<Empty description="Выберите событие для редактирования" />}></Route>
+                            <Route
+                                path=""
+                                element={<Empty description="Выберите событие для редактирования" />}
+                            ></Route>
                             <Route path=":eventId" element={<EventEditor />} />
                         </Route>
                     </Route>

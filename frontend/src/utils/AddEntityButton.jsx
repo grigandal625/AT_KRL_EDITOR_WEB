@@ -1,7 +1,7 @@
 import { Button, Modal, Form, ConfigProvider, theme, Tooltip } from "antd";
 import { Provider, useDispatch } from "react-redux";
 import MainTypeForm from "../components/knowledge_base/types/MainTypeForm";
-import { RouterProvider, useMatches, useNavigate, useParams } from "react-router-dom";
+import { useMatches, useNavigate, useParams } from "react-router-dom";
 import { PlusCircleFilled } from "@ant-design/icons";
 import { createType } from "../redux/stores/kbTypesSlicer";
 import "./AddEntityButton.css";
@@ -9,8 +9,9 @@ import store from "../redux/store";
 import MainBaseObjectForm from "../components/knowledge_base/objects/base_objects/MainBaseObjectForm";
 import { createObject } from "../redux/stores/kbObjectsSlicer";
 import MainEventForm from "../components/knowledge_base/objects/events/MainEventForm";
-import { router } from "../App";
 import { createEvent } from "../redux/stores/kbEventsSlicer";
+import { createInterval } from "../redux/stores/kbItervalsSlicer";
+import MainIntervalForm from "../components/knowledge_base/objects/intervals/MainIntervalForm";
 
 export default ({ kbTab, showTooltip, ...props }) => {
     const matches = useMatches();
@@ -87,7 +88,38 @@ export default ({ kbTab, showTooltip, ...props }) => {
             },
         });
     };
-    const showAddIntervalDialog = () => {};
+    const showAddIntervalDialog = () => {
+        const dialog = Modal.confirm({
+            icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
+            title: "Добавление интервала",
+            className: "add-entity-dialog",
+            content: (
+                <Provider store={store}>
+                    <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
+                        <MainIntervalForm layout="vertical" forCreate form={form} />
+                    </ConfigProvider>
+                </Provider>
+            ),
+            okButtonProps: {
+                style: { borderRadius },
+                onClick: async () => {
+                    try {
+                        const data = await form.validateFields();
+                        dispatch(createInterval({ id, data, navigate }));
+                        dialog.destroy();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+            },
+            okText: "Добавить интервал",
+            cancelText: "Отмена",
+            cancelButtonProps: {
+                style: { borderRadius },
+            },
+        });
+    };
+
     const showAddEventDialog = () => {
         const dialog = Modal.confirm({
             icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
