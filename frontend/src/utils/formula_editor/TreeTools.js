@@ -42,8 +42,8 @@ export const treeItemToExpressionJSON = (treeItem, simpleMode) => {
                 op.Value = operationValueAttrGetters[operationDesc.meta](treeItem.data.itemType);
             } else {
                 op.tag = treeItem.data.itemType;
-                if (treeItem.data.nonFactor) {
-                    op.non_factor = { belief: 50, probability: 100, accuracy: 0, ...treeItem.data.nonFactor };
+                if (treeItem.data.value?.non_factor) {
+                    op.non_factor = { belief: 50, probability: 100, accuracy: 0, ...treeItem.data.value?.non_factor };
                 }
             }
             op.left = treeItemToExpressionJSON(treeItem.children[0], simpleMode);
@@ -52,6 +52,11 @@ export const treeItemToExpressionJSON = (treeItem, simpleMode) => {
             }
 
             return op;
+        } else if (!simpleMode) {
+            if (treeItem?.data?.value) {
+                treeItem.data.value.non_factor = undefined;
+            }
+            return treeItem.data.value;
         }
     }
 };
@@ -83,7 +88,7 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
                     ];
                 }
             }
-        } else {
+        } else if (!["EvIntRel", "EvRel", "IntRel"].includes(expression.tag)) {
             treeItem.data = {
                 itemType: expression.tag,
             };
@@ -104,8 +109,13 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
             }
 
             if (expression.non_factor) {
-                treeItem.data.nonFactor = expression.non_factor;
+                treeItem.data.value = { ...treeItem.data.value, non_factor: expression.non_factor };
             }
+        } else {
+            treeItem.data = {
+                itemType: expression.Value,
+                value: expression,
+            };
         }
     }
     return treeItem;
