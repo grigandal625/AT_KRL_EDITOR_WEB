@@ -1,17 +1,4 @@
-import {
-    Tree,
-    Select,
-    Space,
-    Input,
-    InputNumber,
-    Checkbox,
-    TreeSelect,
-    Button,
-    Tooltip,
-    Typography,
-    Dropdown,
-    AutoComplete,
-} from "antd";
+import { Tree, Select, Space, Input, InputNumber, Checkbox, TreeSelect, Button, Tooltip, Typography, Dropdown, AutoComplete } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getKbObjects, selectKbObjects } from "../../redux/stores/kbObjectsSlicer";
 import { useEffect, useState } from "react";
@@ -49,8 +36,7 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
     const attrData = objectData && objectData.ko_attributes.find((attr) => attr.kb_id === currentAttrKbId);
 
     const objectOptions = kbObjectsStore.items.map((obj) => Object({ value: obj.id, key: obj.id, label: obj.kb_id }));
-    const attrOptions =
-        (objectData && objectData.ko_attributes.map((attr) => Object({ value: attr.id, label: attr.kb_id }))) || [];
+    const attrOptions = (objectData && objectData.ko_attributes.map((attr) => Object({ value: attr.id, label: attr.kb_id }))) || [];
 
     const selectedObject = objectData && objectData.id;
     const selectedAttr = attrData && attrData.id;
@@ -58,9 +44,7 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
     const onRefChange = (objectId, attrId) => {
         const ref = simpleMode ? { ...value, tag: "Attribute" } : { ...value, tag: "ref" };
         const currentObjectKbId = simpleMode ? ref.Value && ref.Value.split(".")[0] : ref.id;
-        const currentAttrKbId = simpleMode
-            ? ref.Value && ref.Value.split(".")[1]
-            : (ref.ref && ref.ref.id) || undefined;
+        const currentAttrKbId = simpleMode ? ref.Value && ref.Value.split(".")[1] : (ref.ref && ref.ref.id) || undefined;
 
         const newObjectData = kbObjectsStore.items.find((obj) => obj.id === objectId);
         const newAttrData = newObjectData && newObjectData.ko_attributes.find((attr) => attr.id === attrId);
@@ -71,16 +55,12 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
         if (newObjectData) {
             if (newAttrData) {
                 if (currentObjectKbId !== newObjectKbId || currentAttrKbId !== newAttrKbId) {
-                    const newValue = simpleMode
-                        ? { ...ref, Value: `${newObjectKbId}.${newAttrKbId}` }
-                        : { ...ref, id: newObjectKbId, ref: { id: newAttrKbId, tag: "ref" } };
+                    const newValue = simpleMode ? { ...ref, Value: `${newObjectKbId}.${newAttrKbId}` } : { ...ref, id: newObjectKbId, ref: { id: newAttrKbId, tag: "ref" } };
                     onChange(newValue);
                 }
             } else {
                 if (currentObjectKbId !== newObjectKbId) {
-                    const newValue = simpleMode
-                        ? { ...ref, Value: newObjectKbId }
-                        : { ...ref, id: newObjectKbId, ref: undefined };
+                    const newValue = simpleMode ? { ...ref, Value: newObjectKbId } : { ...ref, id: newObjectKbId, ref: undefined };
                     onChange(newValue);
                 }
             }
@@ -133,7 +113,7 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
         number: "Number",
         boolean: "TruthVal",
     };
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const simpleTagTypes = Object.fromEntries(Object.entries(simpleTags).map(([k, v]) => [v, k]));
 
@@ -150,8 +130,27 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
     let valueType = "string";
 
     const stringValueOptions = kbTypesStore.items
-        .filter((t) => t.meta === 1)
-        .map((t) => ({ label: t.kb_id, options: t.kt_values.map((v) => ({ value: v.data })) }));
+        .filter((t) => t.meta === 1 || t.meta === 3)
+        .reduce(
+            (accum, t) => [
+                ...accum,
+                ...t.kt_values.map((v) => ({
+                    value: v.data.name || v.data,
+                    type: t.kb_id,
+                })),
+            ],
+            []
+        )
+        .map((v) => ({
+            value: v.value,
+            label: (
+                <Space>
+                    <b>{v.value}</b>
+                    <Typography.Text type="secondary">{v.type}</Typography.Text>
+                </Space>
+            ),
+        }))
+        .filter((value, i, arr) => arr.map((v) => v.value).indexOf(value.value) === i);
 
     if (value) {
         if (simpleMode) {
@@ -177,12 +176,12 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
     const valueInputs = {
         string: (
             <AutoComplete
-            dropdownStyle={{minWidth: 200}}
+                dropdownStyle={{ minWidth: 200 }}
                 size="small"
                 style={{ minWidth: 100 }}
                 placeholder="Введите символьное значение"
                 value={inputValue}
-                options={stringValueOptions}
+                options={inputValue ? stringValueOptions.filter((v) => v.value.toLowerCase().includes(inputValue.toLowerCase())) : stringValueOptions}
                 onChange={(e) => updateValue(valueType, e)}
             />
         ),
@@ -235,9 +234,7 @@ const FormulaTreeItem = ({ item, updateItem }) => {
                 const oldOperation = operations[data.itemType];
                 const newOperation = operations[itemType];
                 if (!newItem.children) {
-                    newItem.children = newOperation.is_binary
-                        ? [{ key: item.key + "-0" }, { key: item.key + "-1" }]
-                        : [{ key: item.key + "-0" }];
+                    newItem.children = newOperation.is_binary ? [{ key: item.key + "-0" }, { key: item.key + "-1" }] : [{ key: item.key + "-0" }];
                 } else if (oldOperation && oldOperation.is_binary && !newOperation.is_binary) {
                     newItem.children = [newItem.children[0]];
                 } else if (oldOperation && !oldOperation.is_binary && newOperation.is_binary) {
@@ -281,12 +278,7 @@ const FormulaTreeItem = ({ item, updateItem }) => {
                 />
             ) : (
                 <Tooltip title="Сбросить">
-                    <Button
-                        onClick={() => onVChange(undefined, itemValue)}
-                        size="small"
-                        icon={<CloseCircleOutlined />}
-                        type="link"
-                    />
+                    <Button onClick={() => onVChange(undefined, itemValue)} size="small" icon={<CloseCircleOutlined />} type="link" />
                 </Tooltip>
             )}
             {items[itemType]}

@@ -45,12 +45,7 @@ export default ({ variableName, ...props }) => {
                                         </Typography.Title>
                                     </Col>
                                     <Col>
-                                        <Button
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            icon={<PlusOutlined />}
-                                            type="dashed"
-                                            onClick={() => add()}
-                                        >
+                                        <Button {...(mobileCheck() ? { size: "small" } : {})} icon={<PlusOutlined />} type="dashed" onClick={() => add()}>
                                             {mobileCheck() ? "" : "Добавить"}
                                         </Button>
                                     </Col>
@@ -59,21 +54,13 @@ export default ({ variableName, ...props }) => {
                                 <Form.Item>
                                     {fields.map((field, i) => (
                                         <Row wrap={false}>
-                                            <Col flex="auto">
-                                                <Form.Item
-                                                    {...field}
-                                                    rules={[{ required: true, message: "Введите значение" }]}
-                                                    name={[i, "data"]}
-                                                >
-                                                    <MFEditor variableName={variableName} />
-                                                </Form.Item>
+                                            <Col>
+                                                <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(i)} />
                                             </Col>
                                             <Col>
-                                                <Button
-                                                    type="link"
-                                                    icon={<MinusCircleOutlined />}
-                                                    onClick={() => remove(i)}
-                                                />
+                                                <Form.Item {...field} rules={[{ required: true, message: "Введите значение" }]} name={[i, "data"]}>
+                                                    <MFEditor variableName={variableName} />
+                                                </Form.Item>
                                             </Col>
                                         </Row>
                                     ))}
