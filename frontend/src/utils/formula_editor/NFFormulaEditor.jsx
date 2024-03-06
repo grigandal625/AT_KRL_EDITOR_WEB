@@ -107,6 +107,7 @@ const NFFormulaTreeItem = ({ item, updateItem, noAllen }) => {
             {!itemType || Object.keys(temporal.operations).includes(itemType) ? (
                 <TreeSelect
                     size="small"
+                    style={!itemType ? { marginTop: 4 } : {}}
                     value={itemType}
                     onChange={(t) => onVChange(t, itemValue)}
                     placeholder="Выберите"

@@ -48,6 +48,10 @@ export const NFInput = ({ value, onChange }) => {
         }
     };
 
+    const saveEmpty = () => {
+        onChange(undefined);
+    };
+
     return (
         <Form onValuesChange={updateNF} size="small" form={form} layout="vertical">
             <Form.Item name="belief" label="Уверенность">
@@ -60,9 +64,12 @@ export const NFInput = ({ value, onChange }) => {
                 <InputNumber min={0} />
             </Form.Item>
             <Form.Item>
-                <Button type="primary" onClick={save}>
-                    Сохранить
-                </Button>
+                <Space>
+                    <Button type="primary" onClick={save}>
+                        Сохранить
+                    </Button>
+                    <Button onClick={saveEmpty}>Сброс</Button>
+                </Space>
             </Form.Item>
         </Form>
     );

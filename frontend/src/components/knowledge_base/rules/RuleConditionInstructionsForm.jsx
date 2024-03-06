@@ -12,7 +12,7 @@ export default ({ form, ...props }) => {
                 <NFFormulaEditor />
             </Form.Item>
             <Divider />
-            <Form.Item label="Действия (ТО)" style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "100%" }}>
+            <Form.Item label="Действия (ТО)">
                 <Form.List name="kr_instructions">
                     {(fields, { add, remove }, { errors }) =>
                         fields.length ? (
@@ -29,24 +29,26 @@ export default ({ form, ...props }) => {
                                         </Button>
                                     </Col>
                                 </Row>
-                                {fields.map(({ key, name, ...field }, index) => (
-                                    <>
-                                        <Space key={key} align="start">
-                                            <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                            <Form.Item name={[name, "ref"]} {...field}>
-                                                <ReferenceInput />
-                                            </Form.Item>
-                                            <b style={{ fontSize: 18 }}>=</b>
-                                            <Form.Item name={[name, "value"]} {...field}>
-                                                <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
-                                            </Form.Item>
-                                            <Form.Item name={[name, "non_factor"]} {...field}>
-                                                <NFValueInput />
-                                            </Form.Item>
-                                        </Space>
-                                        <Divider />
-                                    </>
-                                ))}
+                                <div style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "100%" }}>
+                                    {fields.map(({ key, name, ...field }, index) => (
+                                        <>
+                                            <Space key={key} align="start">
+                                                <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
+                                                <Form.Item name={[name, "ref"]} {...field}>
+                                                    <ReferenceInput />
+                                                </Form.Item>
+                                                <b style={{ fontSize: 18 }}>=</b>
+                                                <Form.Item name={[name, "value"]} {...field}>
+                                                    <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
+                                                </Form.Item>
+                                                <Form.Item name={[name, "non_factor"]} {...field}>
+                                                    <NFValueInput />
+                                                </Form.Item>
+                                            </Space>
+                                            <Divider />
+                                        </>
+                                    ))}
+                                </div>
                             </Form.Item>
                         ) : (
                             <Empty description="Действий не добавлено">
@@ -59,7 +61,7 @@ export default ({ form, ...props }) => {
                 </Form.List>
             </Form.Item>
             <Divider />
-            <Form.Item label="Действия (ИНАЧЕ)" style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "100%" }}>
+            <Form.Item label="Действия (ИНАЧЕ)">
                 <Form.List name="kr_else_instructions">
                     {(fields, { add, remove }, { errors }) =>
                         fields.length ? (
@@ -76,24 +78,26 @@ export default ({ form, ...props }) => {
                                         </Button>
                                     </Col>
                                 </Row>
-                                {fields.map(({ key, name, ...field }, index) => (
-                                    <>
-                                        <Space key={key} align="start">
-                                            <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                            <Form.Item name={[name, "ref"]} {...field}>
-                                                <ReferenceInput />
-                                            </Form.Item>
-                                            <b style={{ fontSize: 18 }}>=</b>
-                                            <Form.Item name={[name, "value"]} {...field}>
-                                                <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
-                                            </Form.Item>
-                                            <Form.Item name={[name, "non_factor"]} {...field}>
-                                                <NFValueInput />
-                                            </Form.Item>
-                                        </Space>
-                                        <Divider />
-                                    </>
-                                ))}
+                                <div style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "100%" }}>
+                                    {fields.map(({ key, name, ...field }, index) => (
+                                        <>
+                                            <Space key={key} align="start">
+                                                <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
+                                                <Form.Item name={[name, "ref"]} {...field}>
+                                                    <ReferenceInput />
+                                                </Form.Item>
+                                                <b style={{ fontSize: 18 }}>=</b>
+                                                <Form.Item name={[name, "value"]} {...field}>
+                                                    <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
+                                                </Form.Item>
+                                                <Form.Item name={[name, "non_factor"]} {...field}>
+                                                    <NFValueInput />
+                                                </Form.Item>
+                                            </Space>
+                                            <Divider />
+                                        </>
+                                    ))}
+                                </div>
                             </Form.Item>
                         ) : (
                             <Empty description="Действий не добавлено">
