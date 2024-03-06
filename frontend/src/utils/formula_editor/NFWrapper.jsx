@@ -68,6 +68,25 @@ export const NFInput = ({ value, onChange }) => {
     );
 };
 
+export const NFValueInput = ({ value, onChange }) => {
+    const [open, setOpen] = useState(false);
+    const show = () => setOpen(true);
+    const hide = () => setOpen(false);
+
+    const updateNF = (value) => {
+        hide();
+        onChange(value);
+    };
+
+    return (
+        <Popover open={open} title="НЕ-факторы" content={<NFInput value={value} onChange={updateNF} />}>
+            <Button onClick={show} type="link" icon={<SettingOutlined />}>
+                {value ? `УВЕРЕННОСТЬ [${value.belief}; ${value.probability}] ТОЧНОСТЬ ${value.accuracy || 0}` : ""}
+            </Button>
+        </Popover>
+    );
+};
+
 export default ({ value, onChange, children }) => {
     const non_factor = value?.non_factor;
     const [open, setOpen] = useState(false);

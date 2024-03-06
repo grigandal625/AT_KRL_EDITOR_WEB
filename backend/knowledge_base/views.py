@@ -188,6 +188,16 @@ class KRuleViewSet(KBRelatedMixin, ModelViewSet):
         instance.kr_else_instructions.all().delete()
         serializer.save(rule=instance)
         return Response(data=serializer.data)
+    
+    @action(methods=['PUT'], detail=True, serializer_class=serializers.KRuleUpdateConditionAndInstructionsSerializer)
+    def update_condition_and_instructions(self, request, *args, **kwargs):
+        instance: models.KRule = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.kr_instructions.all().delete()
+        instance.kr_else_instructions.all().delete()
+        serializer.save()
+        return Response(data=serializer.data)
 
 
 class KRuleInstructionViewSet(ModelViewSet):

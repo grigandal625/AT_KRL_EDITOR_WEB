@@ -67,14 +67,16 @@ export const ReferenceInput = ({ value, onChange, simpleMode }) => {
     };
 
     return (
-        <Space>
-            <div>
+        <Space wrap={false}>
+            <div style={{ whiteSpace: "nowrap" }}>
                 {objectData ? (
                     <a target="_blank" href={`/knowledge_bases/${id}/objects/base_objects/${objectData.id}`}>
                         {objectData.kb_id}
                     </a>
                 ) : (
-                    <Typography.Text type="secondary">(Выберите объект)</Typography.Text>
+                    <Typography.Text type="secondary" style={{ whiteSpace: "nowrap" }}>
+                        (Выберите объект)
+                    </Typography.Text>
                 )}
                 <Dropdown
                     trigger="click"
@@ -242,7 +244,7 @@ const FormulaTreeItem = ({ item, updateItem }) => {
     );
 };
 
-export default ({ value, onChange }) => {
+export default ({ value, onChange, noScrollOverflow, minHeight }) => {
     let formulaTree = ExpressionJSONToTreeItem(value, true);
     const allKeys = getAllKeys(formulaTree);
     const [expandedKeys, setExpandedKeys] = useState(allKeys);
@@ -269,9 +271,9 @@ export default ({ value, onChange }) => {
     }, [value]);
 
     return (
-        <div style={{ whiteSpace: "nowrap", overflowX: "scroll", overflowY: "hidden", height: "100%" }}>
+        <div style={{ whiteSpace: "nowrap", height: "100%", ...(noScrollOverflow ? {} : { overflowX: "scroll", overflowY: "hidden" }) }}>
             <Tree
-                style={{ minHeight: 150 }}
+                style={{ minHeight: minHeight || 150 }}
                 selectable={false}
                 expandedKeys={expandedKeys}
                 treeData={[formulaTree]}

@@ -12,6 +12,8 @@ import MainEventForm from "../components/knowledge_base/objects/events/MainEvent
 import { createEvent } from "../redux/stores/kbEventsSlicer";
 import { createInterval } from "../redux/stores/kbItervalsSlicer";
 import MainIntervalForm from "../components/knowledge_base/objects/intervals/MainIntervalForm";
+import MainRuleForm from "../components/knowledge_base/rules/MainRuleForm";
+import { createRule } from "../redux/stores/kbRulesSlicer";
 
 export default ({ kbTab, showTooltip, ...props }) => {
     const matches = useMatches();
@@ -151,14 +153,44 @@ export default ({ kbTab, showTooltip, ...props }) => {
             },
         });
     };
-    const showAddRuleDialog = () => {};
+    const showAddRuleDialog = () => {
+        const dialog = Modal.confirm({
+            icon: <PlusCircleFilled style={{ color: colorPrimary }} />,
+            title: "Добавление правила",
+            className: "add-entity-dialog",
+            content: (
+                <Provider store={store}>
+                    <ConfigProvider theme={{ cssVar: true, token: { borderRadius: 2 } }}>
+                        <MainRuleForm layout="vertical" forCreate form={form} />
+                    </ConfigProvider>
+                </Provider>
+            ),
+            okButtonProps: {
+                style: { borderRadius },
+                onClick: async () => {
+                    try {
+                        const data = await form.validateFields();
+                        dispatch(createRule({ id, data, navigate }));
+                        dialog.destroy();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+            },
+            okText: "Добавить правило",
+            cancelText: "Отмена",
+            cancelButtonProps: {
+                style: { borderRadius },
+            },
+        });
+    };
 
     const handlers = {
         types: showAddTypeDialog,
         base_objects: showAddObjectDialog,
         intervals: showAddIntervalDialog,
         events: showAddEventDialog,
-        rule: showAddRuleDialog,
+        rules: showAddRuleDialog,
     };
 
     const captions = {

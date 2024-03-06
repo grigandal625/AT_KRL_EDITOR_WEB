@@ -123,5 +123,14 @@ class KRuleSerializer(serializers.ModelSerializer):
         exclude = 'knowledge_base',
 
 
+class KRuleUpdateConditionAndInstructionsSerializer(serializers.ModelSerializer):
+    kr_instructions = KRuleSetInstructionsSerializer()
+    kr_else_instructions = KRuleSetElseInstructionsSerializer()
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = KRule
+        fields = 'id', 'kr_instructions', 'kr_else_instructions', 'condition'
+
 class KRLSerializer(serializers.Serializer):
     krl = serializers.CharField(read_only=True)

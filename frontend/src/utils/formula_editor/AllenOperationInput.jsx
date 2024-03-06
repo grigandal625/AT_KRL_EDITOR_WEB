@@ -57,26 +57,21 @@ export const TemporalEntitySelect = ({ value, onChange, mode, allowedModes }) =>
     };
 
     return (
-        <Space>
+        <Space wrap={false}>
             {seletedEntity ? (
                 <Link target="_blank" to={tagStores[value.tag].urlRenderer({ id, item: seletedEntity })}>
                     {value.Name}
                 </Link>
             ) : (
-                <Typography.Text type="secondary">(выберите)</Typography.Text>
+                <Typography.Text style={{ whiteSpace: "nowrap" }} type="secondary">
+                    (выберите)
+                </Typography.Text>
             )}
             <Popover
                 style={{ padding: 0 }}
                 trigger="click"
                 placement="bottomLeft"
-                content={
-                    <Menu
-                        onClick={onSelectItem}
-                        selectedKeys={selectedKey ? [selectedKey] : []}
-                        items={items}
-                        mode={"inline"}
-                    />
-                }
+                content={<Menu onClick={onSelectItem} selectedKeys={selectedKey ? [selectedKey] : []} items={items} mode={"inline"} />}
             >
                 <Button size="small" type="link" icon={<DownOutlined />} />
             </Popover>
@@ -143,11 +138,7 @@ export default ({ value, onChange, operation }) => {
             <Typography.Text>
                 <b>{operation || ""}</b>
             </Typography.Text>
-            <TemporalEntitySelect
-                value={value?.right}
-                onChange={updateRight}
-                allowedModes={storeParts[tag]?.leftMode === "interval" ? ["interval"] : op.allowed_right}
-            />
+            <TemporalEntitySelect value={value?.right} onChange={updateRight} allowedModes={storeParts[tag]?.leftMode === "interval" ? ["interval"] : op.allowed_right} />
         </Space>
     );
 };

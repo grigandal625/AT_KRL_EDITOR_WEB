@@ -58,7 +58,7 @@ class KInterval(models.Model):
 class KRule(models.Model):
     kb_id = models.CharField(max_length=255)
     knowledge_base = models.ForeignKey(to=KnowledgeBase, on_delete=models.CASCADE, related_name='k_rules')
-    condition = models.JSONField()
+    condition = models.JSONField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
 

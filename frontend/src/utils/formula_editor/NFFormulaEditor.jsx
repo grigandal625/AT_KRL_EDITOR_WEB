@@ -22,7 +22,7 @@ export const NFValueInput = ({ value, onChange }) => (
     </NFWrapper>
 );
 
-const NFFormulaTreeItem = ({ item, updateItem }) => {
+const NFFormulaTreeItem = ({ item, updateItem, noAllen }) => {
     const data = item.data || {};
     const itemType = data.itemType;
     const itemValue = data.value;
@@ -35,8 +35,6 @@ const NFFormulaTreeItem = ({ item, updateItem }) => {
         IntRel: { leftStore: kbIntervalsStore, rightStore: kbIntervalsStore },
     };
 
-    const allOperations = { ...operations, ...temporal.operations };
-
     const onVChange = (itemType, value) => {
         const newItem = { ...item };
         const newData = { ...data, itemType, value };
@@ -45,9 +43,7 @@ const NFFormulaTreeItem = ({ item, updateItem }) => {
                 const oldOperation = operations[data.itemType];
                 const newOperation = operations[itemType];
                 if (!newItem.children) {
-                    newItem.children = newOperation.is_binary
-                        ? [{ key: item.key + "-0" }, { key: item.key + "-1" }]
-                        : [{ key: item.key + "-0" }];
+                    newItem.children = newOperation.is_binary ? [{ key: item.key + "-0" }, { key: item.key + "-1" }] : [{ key: item.key + "-0" }];
                 } else if (oldOperation && oldOperation.is_binary && !newOperation.is_binary) {
                     newItem.children = [newItem.children[0]];
                 } else if (oldOperation && !oldOperation.is_binary && newOperation.is_binary) {
@@ -117,7 +113,7 @@ const NFFormulaTreeItem = ({ item, updateItem }) => {
                     treeExpandAction="click"
                     dropdownStyle={{ overflow: "auto" }}
                     popupMatchSelectWidth={false}
-                    treeData={evaluatable.itemTypeOptions}
+                    treeData={noAllen ? evaluatable.itemTypeOptionsNoAllen : evaluatable.itemTypeOptions}
                 />
             ) : Object.keys(operations).includes(itemType) ? (
                 <NFWrapper value={itemValue} onChange={(v) => onVChange(itemType, v)}>
@@ -129,30 +125,21 @@ const NFFormulaTreeItem = ({ item, updateItem }) => {
                         treeExpandAction="click"
                         dropdownStyle={{ overflow: "auto" }}
                         popupMatchSelectWidth={false}
-                        treeData={evaluatable.itemTypeOptions}
+                        treeData={noAllen ? evaluatable.itemTypeOptionsNoAllen : evaluatable.itemTypeOptions}
                     />
                 </NFWrapper>
             ) : (
                 <Tooltip title="Сбросить">
-                    <Button
-                        onClick={() => onVChange(undefined, itemValue)}
-                        size="small"
-                        icon={<CloseCircleOutlined />}
-                        type="link"
-                    />
+                    <Button onClick={() => onVChange(undefined, itemValue)} size="small" icon={<CloseCircleOutlined />} type="link" />
                 </Tooltip>
             )}
-            {Object.keys(temporal.operations).includes(itemType) ? (
-                <AllenOperationInput value={itemValue} onChange={(v) => onVChange(itemType, v)} operation={itemType} />
-            ) : (
-                <></>
-            )}
+            {Object.keys(temporal.operations).includes(itemType) ? <AllenOperationInput value={itemValue} onChange={(v) => onVChange(itemType, v)} operation={itemType} /> : <></>}
             {items[itemType]}
         </Space>
     );
 };
 
-export default ({ value, onChange }) => {
+export default ({ value, onChange, noAllen, noScrollOverflow, minHeight }) => {
     let formulaTree = ExpressionJSONToTreeItem(value, false);
     const allKeys = getAllKeys(formulaTree);
     const [expandedKeys, setExpandedKeys] = useState(allKeys);
@@ -179,9 +166,9 @@ export default ({ value, onChange }) => {
     }, [value]);
 
     return (
-        <div style={{ whiteSpace: "nowrap", overflowX: "scroll", overflowY: "hidden", height: "100%" }}>
+        <div style={{ whiteSpace: "nowrap", height: "100%", ...(noScrollOverflow ? {} : { overflowX: "scroll", overflowY: "hidden" }) }}>
             <Tree
-                style={{ minHeight: 150 }}
+                style={{ minHeight: minHeight || 150 }}
                 selectable={false}
                 expandedKeys={expandedKeys}
                 treeData={[formulaTree]}
@@ -190,7 +177,7 @@ export default ({ value, onChange }) => {
                 onExpand={(expandedKeys, info) => {
                     setExpandedKeys(expandedKeys);
                 }}
-                titleRender={(item) => <NFFormulaTreeItem item={item} updateItem={updateItem} />}
+                titleRender={(item) => <NFFormulaTreeItem item={item} updateItem={updateItem} noAllen={noAllen} />}
             />
         </div>
     );

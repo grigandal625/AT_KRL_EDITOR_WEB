@@ -290,6 +290,41 @@ const evaluatable = {
             ],
         },
     ],
+    itemTypeOptionsNoAllen: [
+        { value: "value", title: "Простое значение" },
+        { value: "ref", title: "Ссылка на атрибут объекта" },
+        {
+            value: "operation",
+            title: "Операция",
+            selectable: false,
+            children: [
+                {
+                    value: "equatation",
+                    title: "Операция сравнения",
+                    selectable: false,
+                    children: Object.entries(operations)
+                        .filter(([_, op]) => op.meta === "eq")
+                        .map(([value, op]) => ({ value, title: op.label || op.values[0] })),
+                },
+                {
+                    value: "mathematics",
+                    title: "Арифметическая операция",
+                    selectable: false,
+                    children: Object.entries(operations)
+                        .filter(([_, op]) => op.meta === "math" || op.meta === "super_math")
+                        .map(([value, op]) => ({ value, title: op.label || op.values[0] })),
+                },
+                {
+                    value: "logics",
+                    title: "Логическая операция",
+                    selectable: false,
+                    children: Object.entries(operations)
+                        .filter(([_, op]) => op.meta === "log")
+                        .map(([value, op]) => ({ value, title: op.label || op.values[0] })),
+                },
+            ],
+        },
+    ],
 };
 
 export { apiLocation, loadStatuses, operations, temporal, evaluatable };

@@ -6,6 +6,7 @@ import kbListSlicer from "./stores/kbListSlicer";
 import kbObjectsSlicer from "./stores/kbObjectsSlicer";
 import kbSlicer from "./stores/kbSlicer";
 import kbTypesSlicer from "./stores/kbTypesSlicer";
+import kbRulesSlicer from "./stores/kbRulesSlicer";
 
 export default configureStore({
     reducer: {
@@ -15,5 +16,6 @@ export default configureStore({
         kbObjects: kbObjectsSlicer,
         kbIntervals: kbItervalsSlicer,
         kbEvents: kbEventsSlicer,
+        kbRules: kbRulesSlicer,
     },
 });
