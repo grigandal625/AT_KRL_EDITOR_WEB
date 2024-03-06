@@ -32,6 +32,7 @@ import {
     setTypeValues,
     updateType,
 } from "../../../redux/stores/kbTypesSlicer";
+import FuzzyTypeValuesForm from "./values/FuzzyTypeValuesForm";
 
 export default () => {
     const navigate = useNavigate();
@@ -127,6 +128,7 @@ export default () => {
     const valuesForms = {
         1: <SymbolicTypeValuesForm form={valuesForm} disabled={disabled} />,
         2: <NumericTypeValuesForm form={valuesForm} disabled={disabled} />,
+        3: <FuzzyTypeValuesForm form={valuesForm} disabled={disabled} variableName={type?.kb_id} />,
     };
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>

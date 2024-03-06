@@ -29,7 +29,7 @@ class KTypeValue(models.Model):
 class KObject(models.Model):
     kb_id = models.CharField(max_length=255)
     knowledge_base = models.ForeignKey(to=KnowledgeBase, on_delete=models.CASCADE, related_name='k_objects')
-    group = models.CharField(max_length=255)
+    group = models.CharField(max_length=255, null=True, blank=True, default="ГРУППА1")
     comment = models.TextField(null=True, blank=True)
 
 
