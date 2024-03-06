@@ -34,14 +34,14 @@ export default ({ form, ...props }) => {
                                         <>
                                             <Space key={key} align="start">
                                                 <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                                <Form.Item name={[name, "ref"]} {...field}>
+                                                <Form.Item name={[name, "data", "ref"]} {...field}>
                                                     <ReferenceInput />
                                                 </Form.Item>
                                                 <b style={{ fontSize: 18 }}>=</b>
-                                                <Form.Item name={[name, "value"]} {...field}>
+                                                <Form.Item name={[name, "data", "value"]} {...field}>
                                                     <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
                                                 </Form.Item>
-                                                <Form.Item name={[name, "non_factor"]} {...field}>
+                                                <Form.Item name={[name, "data", "non_factor"]} {...field}>
                                                     <NFValueInput />
                                                 </Form.Item>
                                             </Space>
@@ -81,16 +81,17 @@ export default ({ form, ...props }) => {
                                 <div style={{ overflowX: "scroll", overflowY: "hidden", maxWidth: "100%" }}>
                                     {fields.map(({ key, name, ...field }, index) => (
                                         <>
+                                            <Form.Item hidden name={[name, "data", "tag"]} initialValue={"assign"} />
                                             <Space key={key} align="start">
                                                 <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                                <Form.Item name={[name, "ref"]} {...field}>
+                                                <Form.Item name={[name, "data", "ref"]} {...field}>
                                                     <ReferenceInput />
                                                 </Form.Item>
                                                 <b style={{ fontSize: 18 }}>=</b>
-                                                <Form.Item name={[name, "value"]} {...field}>
+                                                <Form.Item name={[name, "data", "value"]} {...field}>
                                                     <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
                                                 </Form.Item>
-                                                <Form.Item name={[name, "non_factor"]} {...field}>
+                                                <Form.Item name={[name, "data", "non_factor"]} {...field}>
                                                     <NFValueInput />
                                                 </Form.Item>
                                             </Space>

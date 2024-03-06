@@ -42,6 +42,7 @@ export const treeItemToExpressionJSON = (treeItem, simpleMode) => {
                 op.Value = operationValueAttrGetters[operationDesc.meta](treeItem.data.itemType);
             } else {
                 op.tag = treeItem.data.itemType;
+                op.sign = treeItem.data.itemType;
                 if (treeItem.data.value?.non_factor) {
                     op.non_factor = { belief: 50, probability: 100, accuracy: 0, ...treeItem.data.value?.non_factor };
                 }
@@ -74,18 +75,13 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
                 treeItem.isLeaf = true;
             } else if (["EqOp", "LogOp", "ArOp"].includes(expression.tag)) {
                 const sign = expression.Value.toLowerCase();
-                const itemType = Object.keys(operations).find(
-                    (k) => operations[k].values.includes(sign) && ["math", "log", "eq"].includes(operations[k].meta)
-                );
+                const itemType = Object.keys(operations).find((k) => operations[k].values.includes(sign) && ["math", "log", "eq"].includes(operations[k].meta));
                 const operationDesc = operations[itemType];
                 treeItem.isLeaf = false;
                 treeItem.data = { itemType };
                 treeItem.children = [ExpressionJSONToTreeItem(expression.left, simpleMode, key)];
                 if (operationDesc.is_binary) {
-                    treeItem.children = [
-                        ...treeItem.children,
-                        ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1"),
-                    ];
+                    treeItem.children = [...treeItem.children, ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1")];
                 }
             }
         } else if (!["EvIntRel", "EvRel", "IntRel"].includes(expression.tag)) {
@@ -93,15 +89,12 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
                 itemType: expression.tag,
             };
 
-            if (Object.keys(operations).includes(expression.tag)) {
-                const operationDesc = operations[expression.tag];
+            if (Object.keys(operations).includes(expression.tag || expression.sign)) {
+                const operationDesc = operations[expression.tag || expression.sign];
                 treeItem.isLeaf = false;
                 treeItem.children = [ExpressionJSONToTreeItem(expression.left, simpleMode, key)];
                 if (operationDesc.is_binary) {
-                    treeItem.children = [
-                        ...treeItem.children,
-                        ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1"),
-                    ];
+                    treeItem.children = [...treeItem.children, ExpressionJSONToTreeItem(expression.right, simpleMode, key, "1")];
                 }
             } else if (["ref", "value"].includes(expression.tag)) {
                 treeItem.data.value = expression;
@@ -121,7 +114,4 @@ export const ExpressionJSONToTreeItem = (expression, simpleMode, previousKey = "
     return treeItem;
 };
 
-export const getAllKeys = ({ key, children }) => [
-    key,
-    ...(children ? children.reduce((accumulator, child) => [...accumulator, ...getAllKeys(child)], []) : []),
-];
+export const getAllKeys = ({ key, children }) => [key, ...(children ? children.reduce((accumulator, child) => [...accumulator, ...getAllKeys(child)], []) : [])];

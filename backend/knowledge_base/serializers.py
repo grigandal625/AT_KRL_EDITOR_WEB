@@ -124,8 +124,8 @@ class KRuleSerializer(serializers.ModelSerializer):
 
 
 class KRuleUpdateConditionAndInstructionsSerializer(serializers.ModelSerializer):
-    kr_instructions = KRuleSetInstructionsSerializer()
-    kr_else_instructions = KRuleSetElseInstructionsSerializer()
+    kr_instructions = KRuleInstructionSerializer(many=True)
+    kr_else_instructions = KRuleElseInstructionSerializer(many=True)
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
