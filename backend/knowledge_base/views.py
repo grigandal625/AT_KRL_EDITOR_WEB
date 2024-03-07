@@ -58,7 +58,6 @@ class KnowledgeBaseViewSet(ModelViewSet):
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=instance.name+'.kbs')
     
-
     @action(methods=['GET'], detail=True, serializer_class=serializers.serializers.Serializer)
     def download_xml(self, request, *args, **kwargs):
         instance = self.get_object()
