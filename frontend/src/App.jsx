@@ -18,6 +18,7 @@ import Events from "./components/knowledge_base/objects/events/Events";
 import EventEditor from "./components/knowledge_base/objects/events/EventEditor";
 import IntervalEditor from "./components/knowledge_base/objects/intervals/IntervalEditor";
 import RuleEditor from "./components/knowledge_base/rules/RuleEditor";
+import Upload from "./components/knowledge_base/Upload";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -51,7 +52,7 @@ export const router = createBrowserRouter(
                         <Route path=":ruleId" element={<RuleEditor />} />
                     </Route>
                 </Route>
-                <Route loader={() => Object({ menuItem: "upload" })} path="upload" />
+                <Route loader={() => Object({ menuItem: "upload" })} path="upload" element={<Upload />} />
             </Route>
         </Route>
     )

@@ -1,5 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
+from rest_framework import exceptions
 from knowledge_base import models
 from knowledge_base import serializers
 from rest_framework.response import Response
@@ -9,6 +11,32 @@ from knowledge_base.service import KBService
 class KnowledgeBaseViewSet(ModelViewSet):
     queryset = models.KnowledgeBase.objects.all()
     serializer_class = serializers.KnowledgeBaseSerializer
+
+    def get_parsers(self):
+        if hasattr(self, 'action_map'):
+            if self.request:
+                if self.request.method.lower() in self.action_map:
+                    if self.action_map[self.request.method.lower()] in ['upload', 'add_upload']:
+                        return [MultiPartParser()]
+        return super().get_parsers()
+
+    @action(methods=['POST'], detail=False, serializer_class=serializers.UploadKBSerializer)
+    def upload(self, request, *args, **kwargs):
+        file = request.FILES['file']
+        file_type = file.name.split('.')[-1]
+        if not file.name.endswith('.kbs') and not file.name.endswith('.xml') and not file.name.endswith('.json'):
+            raise exceptions.ValidationError(f'File type ".{file_type}" is not supported')
+        kb = None
+        content = file.open('r').read().decode()
+        if file.name.endswith('.kbs'):
+            kb = KBService.kb_from_krl(content)
+        elif file.name.endswith('.xml'):
+            kb = KBService.kb_from_xml(content)
+        elif file.name.endswith('.json'):
+            kb = KBService.kb_from_json(content)
+        instance = KBService.knowledge_base_to_model(kb, file_name=file.name[:-(len(file_type) + 1)])
+        
+        return Response({'success': True, 'knowledge_base': instance.pk})
 
 
 class KBRelatedMixin:
@@ -21,7 +49,6 @@ class KBRelatedMixin:
 
     def perform_create(self, serializer):
         return serializer.save(knowledge_base=self.knowledge_base)
-    
 
     @action(methods=['GET'], detail=True)
     def duplicate(self, request, *args, **kwargs):

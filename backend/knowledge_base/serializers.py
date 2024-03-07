@@ -18,6 +18,13 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class UploadKBSerializer(serializers.Serializer):
+    file = serializers.FileField(write_only=True)
+    success = serializers.BooleanField(default=True, read_only=True)
+    knowledge_base = serializers.IntegerField(read_only=True)
+    
+
+
 class KTypeValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = KTypeValue
