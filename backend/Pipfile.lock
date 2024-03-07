@@ -33,7 +33,7 @@
         },
         "at-krl": {
             "git": "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl",
-            "ref": "cc82fdeac6d1bfce4198c3ebefd8d5f2a266f5fe"
+            "ref": "c5a114cffd556e5f4192b6834e22c4c70c67b2f4"
         },
         "attrs": {
             "hashes": [

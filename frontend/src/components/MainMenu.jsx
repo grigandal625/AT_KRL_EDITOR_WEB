@@ -4,6 +4,7 @@ import { DatabaseFilled, FileAddFilled, FolderOpenFilled, UploadOutlined, SaveFi
 import { Link } from "react-router-dom";
 import { useMatches, useParams } from "react-router-dom";
 import "./MainMenu.css";
+import { apiLocation } from "../GLOBAL";
 
 const { Sider } = Layout;
 
@@ -23,7 +24,7 @@ const ITEM = (key, label, icon, children, extraMapping) =>
               label,
           };
 
-const items = (extraMapping) => [
+const items = (id, extraMapping) => [
     ITEM(
         "kb",
         "Базы знаний",
@@ -40,9 +41,27 @@ const items = (extraMapping) => [
         "Сохранение базы знаний",
         <SaveFilled />,
         [
-            ITEM("krl", "Сохранить в формате базового/расширенного ЯПЗ", <FileFilled />, undefined, extraMapping),
-            ITEM("xml", "Сохранить в формате XML", <FileExcelFilled />, undefined, extraMapping),
-            ITEM("json", "Сохранить в формате JSON", <FileTextFilled />, undefined, extraMapping),
+            ITEM(
+                "krl",
+                <a {...(Boolean(id) ? { href: `${apiLocation}/api/knowledge_bases/${id}/download_krl/`, download: true, target: "_blank" } : {})}>Сохранить в формате базового/расширенного ЯПЗ</a>,
+                <FileFilled />,
+                undefined,
+                extraMapping
+            ),
+            ITEM(
+                "xml",
+                <a {...(Boolean(id) ? { href: `${apiLocation}/api/knowledge_bases/${id}/download_xml/`, download: true, target: "_blank" } : {})}>Сохранить в формате XML</a>,
+                <FileExcelFilled />,
+                undefined,
+                extraMapping
+            ),
+            ITEM(
+                "json",
+                <a {...(Boolean(id) ? { href: `${apiLocation}/api/knowledge_bases/${id}/download_json/`, download: true, target: "_blank" } : {})}>Сохранить в формате JSON</a>,
+                <FileTextFilled />,
+                undefined,
+                extraMapping
+            ),
         ],
         extraMapping
     ),
@@ -64,7 +83,8 @@ export const PageMenu = () => {
             disabled: !Boolean(id),
         },
     };
-    return <Menu mode="horizontal" selectedKeys={[selectedMenuItem]} items={items(extraMapping)} />;
+
+    return <Menu mode="horizontal" selectedKeys={[selectedMenuItem]} items={items(id, extraMapping)} />;
 };
 
 export default ({ width, setWidth }) => {
@@ -102,7 +122,7 @@ export default ({ width, setWidth }) => {
             disabled: !Boolean(id),
         },
     };
-    const menuItems = items(extraMapping);
+    const menuItems = items(id, extraMapping);
     return (
         <Sider className="page-sider" collapsed={collapsed} collapsible width={width} onCollapse={(value) => setCollapsed(value)}>
             <Link to="/">

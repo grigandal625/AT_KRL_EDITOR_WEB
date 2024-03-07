@@ -34,8 +34,11 @@ export default () => {
             const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/upload/`, {
                 method: "post",
                 body: fmData,
+                // headers: {
+                //     'Content-Disposition': `attachment; filename="${file.name}"`,
+                // },
                 mode: "cors",
-                credentials: "include",
+                credentials: "same-origin",
             });
             if (fetchResult.status !== 200) {
                 onError(fetchResult);

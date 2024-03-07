@@ -41,7 +41,14 @@ class KBService:
         for t in kb.k_types.all():
             result.types.append(KBService.convert(t))
         for o in kb.k_objects.all():
-            result.classes.objects.append(KBService.convert(o))
+            kb_class: KBClass = KBService.convert(o)
+            object_id = kb_class.id
+            class_id = result.get_free_class_id(object_id)
+            kb_class.id = class_id
+            result.classes.objects.append(kb_class)
+            result.world.properties.append(
+                kb_class.create_instance(result, object_id, kb_class.desc, as_property=True)
+            )
         for i in kb.k_intervals.all():
             result.classes.intervals.append(KBService.convert(i))
         for e in kb.k_events.all():

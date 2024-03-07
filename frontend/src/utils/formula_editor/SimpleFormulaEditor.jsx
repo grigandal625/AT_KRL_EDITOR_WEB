@@ -181,7 +181,7 @@ export const ValueInput = ({ value, onChange, simpleMode }) => {
                 style={{ minWidth: 100 }}
                 placeholder="Введите символьное значение"
                 value={inputValue}
-                options={inputValue ? stringValueOptions.filter((v) => v.value.toLowerCase().includes(inputValue.toLowerCase())) : stringValueOptions}
+                options={inputValue ? stringValueOptions.filter((v) => v.value.toLowerCase().includes(String(inputValue).toLowerCase())) : stringValueOptions}
                 onChange={(e) => updateValue(valueType, e)}
             />
         ),
