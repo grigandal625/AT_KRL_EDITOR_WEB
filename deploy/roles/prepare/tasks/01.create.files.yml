@@ -1,18 +1,18 @@
 - name: Fill env vars file for Docker Compose
-  ini_file:
+  community.general.ini_file:
     path: ./.env
     section: null
     option: "{{ item.key }}"
     value: "{{ item.value }}"
     no_extra_spaces: true
-  loop: "{{ env_vars|dict2items }}"
+  loop: "{{ env_vars | dict2items }}"
 
 - name: Render backend nginx conf
-  template:
+  ansible.builtin.template:
     src: ./deploy/roles/prepare/files/nginx-backend/nginx.conf.j2
     dest: ./deploy/roles/prepare/files/nginx-backend/nginx.conf
 
 - name: Render frontend nginx conf
-  template:
+  ansible.builtin.template:
     src: ./deploy/roles/prepare/files/nginx-frontend/nginx.conf.j2
     dest: ./deploy/roles/prepare/files/nginx-frontend/nginx.conf
