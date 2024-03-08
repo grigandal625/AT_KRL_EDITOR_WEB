@@ -1,0 +1,14 @@
+env_vars:
+  DB_ENGINE: postgres
+
+  # Пароль пользователя баз данных
+  DB_PASS: postgres_pass
+
+  # Учётные данные суперпользователя Django
+  DJANGO_SUPERUSER_USERNAME: admin
+  DJANGO_SUPERUSER_EMAIL: mail@example.com
+  DJANGO_SUPERUSER_PASSWORD: password
+
+  # Настройки разворачивания
+  BACKEND_PORT: 8888
+  FRONTEND_PORT: 80

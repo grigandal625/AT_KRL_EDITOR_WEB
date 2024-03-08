@@ -1,0 +1,9 @@
+server {
+    listen {{ env_vars.FRONTEND_PORT }};
+
+    location / {
+        root /usr/share/nginx/html/;
+        include /etc/nginx/mime.types;
+        try_files $uri $uri/ /index.html;
+    }
+}

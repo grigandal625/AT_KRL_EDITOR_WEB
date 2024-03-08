@@ -1,0 +1,9 @@
+- name: Prepare to deploy at-krl-editor
+  hosts: 127.0.0.1
+  connection: local
+  any_errors_fatal: true
+  gather_facts: true
+  vars_files:
+    - ./deploy/files/vars.yml
+  roles:
+    - { role: deploy/roles/prepare }

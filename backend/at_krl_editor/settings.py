@@ -83,11 +83,25 @@ WSGI_APPLICATION = 'at_krl_editor.wsgi.application'
 
 SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", BASE_DIR / 'db.sqlite3')
 
+SQLITE_CONFIG = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': SQLITE_DB_PATH,
+}
+
+POSTGRES_CONFIG = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': os.getenv('DB_NAME', 'at_krl_editor'),
+    'USER': os.getenv('DB_USER', 'at_krl'),
+    'PASSWORD': os.getenv('DB_PASS'),
+    'HOST': os.getenv('DB_HOST', 'postgres'),
+    'PORT': os.getenv('DB_PORT', '5432'),
+}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SQLITE_DB_PATH,
-    }
+        'postgres': POSTGRES_CONFIG,
+        'sqlite': SQLITE_CONFIG
+    }[os.getenv('DB_ENGINE', 'postgres')]
 }
 
 

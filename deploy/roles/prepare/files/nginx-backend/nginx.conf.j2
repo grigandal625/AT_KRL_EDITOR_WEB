@@ -1,0 +1,18 @@
+upstream at_krl_editor{
+    server backend:{{ env_vars.BACKEND_PORT }};
+}
+
+server {
+
+    listen {{ env_vars.BACKEND_PORT }};
+
+    location / {
+        proxy_pass http://at_krl_editor;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+    location /static/ {
+        alias /home/static/;
+    }
+}
