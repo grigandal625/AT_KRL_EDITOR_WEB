@@ -21,3 +21,4 @@ frontend/yarn-error.log*
 __pycache__
 backend/db.sqlite3
 .vscode
+*.retry

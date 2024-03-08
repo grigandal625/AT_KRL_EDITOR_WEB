@@ -1,0 +1,2 @@
+- name: Generate files
+  include_tasks: 01.create.files.yml
