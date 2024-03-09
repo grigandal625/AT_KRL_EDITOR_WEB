@@ -33,3 +33,6 @@ docker compose build backend
 
 И тогда снова выполнить `make start`
 
+## Дополнительные настройки
+
+Дополнительные переменные разветывания находятся в файле [deploy/files/vars.yml](./deploy/files/vars.yml)
