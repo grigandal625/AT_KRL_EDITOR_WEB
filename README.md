@@ -23,6 +23,7 @@ make prepare
 make build
 make start
 ```
+`build` в первый раз займет достаточно длительное время, особенно образа `frontend`, но дальнейшие вызовы будут ускорены за счет кеширования.
 
 Если возникают ошибки, попробовать выполнить build отдельно для компонентов:
 
@@ -30,7 +31,6 @@ make start
 docker compose build frontend
 docker compose build backend
 ```
-
 И тогда снова выполнить `make start`
 
 ## Дополнительные настройки

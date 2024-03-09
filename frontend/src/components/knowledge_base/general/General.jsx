@@ -11,6 +11,7 @@ import { getKbObjects, selectKbObjects } from "../../../redux/stores/kbObjectsSl
 import { getKbEvents, selectkbEvents } from "../../../redux/stores/kbEventsSlicer";
 import { getKbIntervals, selectkbIntervals } from "../../../redux/stores/kbItervalsSlicer";
 import { getKbRules, selectkbRules } from "../../../redux/stores/kbRulesSlicer";
+import mobileCheck from "../../../utils/mobileCheck";
 
 export default () => {
     const [disabled, setDisabled] = useState(false);
@@ -86,7 +87,7 @@ export default () => {
                 </Button>
                 <Upload {...props} disabled={disabled} showUploadList={disabled}>
                     <Button disabled={disabled} icon={<UploadOutlined />}>
-                        Дозагрузить из файла (kbs, xml, json)
+                        Дозагрузить из файла {mobileCheck() ? <></> : <>(kbs, xml, json)</>}
                     </Button>
                 </Upload>
             </Space>
