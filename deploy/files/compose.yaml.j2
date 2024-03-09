@@ -1,0 +1,35 @@
+version: '3.9'
+
+volumes:
+  static-volume:
+  db-volume:
+    labels:
+      - database
+
+x-backend: &at_krl_backend
+  build:
+      context: .
+      dockerfile: ./deploy/backend/Dockerfile
+  image: paas_back
+  env_file:
+    - .env
+
+services:
+
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: {{ env_vars.DB_NAME | default('at_krl_editor') }}
+      POSTGRES_USER: {{ env_vars.DB_NAME | default('at_krl') }}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    ports:
+      - {{ env_vars.DB_PORT | default('5432') }}:{{ env_vars.DB_PORT | default('5432') }}

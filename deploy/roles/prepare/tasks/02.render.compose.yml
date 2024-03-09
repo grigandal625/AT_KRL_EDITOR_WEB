@@ -1,0 +1,4 @@
+- name: Render backend nginx conf
+  ansible.builtin.template:
+    src: ./deploy/files/compose.yaml.j2
+    dest: ./compose.yaml

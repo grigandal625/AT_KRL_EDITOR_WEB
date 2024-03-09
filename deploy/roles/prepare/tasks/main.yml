@@ -1,2 +1,4 @@
 - name: Generate files
   include_tasks: 01.create.files.yml
+- name: Generate compose
+  include_tasks: 02.render.compose.yml

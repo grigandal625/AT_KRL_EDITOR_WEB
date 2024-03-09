@@ -1,2 +1,2 @@
 prepare:
-	ansible-playbook
+	ansible-playbook at-krl-editor.main.yml
