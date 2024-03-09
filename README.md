@@ -35,4 +35,4 @@ docker compose build backend
 
 ## Дополнительные настройки
 
-Дополнительные переменные разветывания находятся в файле [deploy/files/vars.yml](./deploy/files/vars.yml)
+Дополнительные переменные разветывания находятся в файле [deploy/files/vars.yml](./deploy/files/vars.yml), при изменении которого ВСЕГДА надо выполнять команду `make prepare`
