@@ -6,6 +6,13 @@
     value: "{{ item.value }}"
     no_extra_spaces: true
   loop: "{{ env_vars | dict2items }}"
+- name: Append vars for react app
+  community.general.ini_file:
+    path: ./.env
+    section: null
+    option: REACT_APP_API_PORT
+    value: "{{ env_vars.BACKEND_PORT | default('8888') }}"
+    no_extra_spaces: true
 
 - name: Render backend nginx conf
   ansible.builtin.template:

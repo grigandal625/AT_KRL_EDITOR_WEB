@@ -3,6 +3,7 @@ env_vars:
 
   # Пароль пользователя баз данных
   DB_PASS: postgres_pass
+  DB_PORT: 5434
 
   # Учётные данные суперпользователя Django
   DJANGO_SUPERUSER_USERNAME: admin

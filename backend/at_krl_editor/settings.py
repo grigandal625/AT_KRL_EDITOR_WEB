@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,12 +100,19 @@ POSTGRES_CONFIG = {
     'PORT': os.getenv('DB_PORT', '5432'),
 }
 
+default_db = {
+    'postgres': POSTGRES_CONFIG,
+    'sqlite': SQLITE_CONFIG
+}[os.getenv('DB_ENGINE', 'postgres')]
+
+logger.debug(default_db)
+
 DATABASES = {
-    'default': {
-        'postgres': POSTGRES_CONFIG,
-        'sqlite': SQLITE_CONFIG
-    }[os.getenv('DB_ENGINE', 'postgres')]
+    'default': default_db
 }
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Password validation
