@@ -1,19 +1,40 @@
 import { useSelector, useDispatch } from "react-redux";
-import { getKbList } from "../../redux/stores/kbListSlicer";
+import { getKbList, deleteKb } from "../../redux/stores/kbListSlicer";
 import { useEffect } from "react";
 import ThemedContainer from "../../utils/ThemedContainer";
-import { Table, Skeleton, Typography, Button } from "antd";
+import { Table, Skeleton, Typography, Button, Modal, theme } from "antd";
 import { loadStatuses } from "../../GLOBAL";
 import { Link } from "react-router-dom";
 import "./KBList.css";
-import { FolderOpenOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FolderOpenOutlined } from "@ant-design/icons";
 
 export default () => {
     const dispatch = useDispatch();
     const kbListStore = useSelector((state) => state.kbList);
+    const {
+        token: { borderRadius, colorPrimary },
+    } = theme.useToken();
     useEffect(() => {
         dispatch(getKbList());
     }, []);
+
+    const confirmDelete = (kb) =>
+        Modal.confirm({
+            title: "Удаление базы знаний",
+            content: (
+                <>
+                    Удалить базу знаний <b>{kb.name}</b> ?
+                </>
+            ),
+            style: { borderRadius },
+            onOk: () => {
+                dispatch(deleteKb(kb));
+            },
+            okText: "Удалить",
+            cancelText: "Отмена",
+            okButtonProps: { style: { borderRadius } },
+            cancelButtonProps: { style: { borderRadius } },
+        });
     const columns = [
         {
             title: "Название",
@@ -26,6 +47,7 @@ export default () => {
             ),
         },
         { title: "Проблемная область", dataIndex: "problem_area", key: "problem_area" },
+        { title: "Удалить", key: "delete", render: (kb) => <Button onClick={() => confirmDelete(kb)} type="text" danger icon={<DeleteOutlined />} /> },
     ];
     return (
         <ThemedContainer>

@@ -3,9 +3,12 @@ import { message, Upload } from "antd";
 import { apiLocation } from "../../GLOBAL";
 import { ThemedBar } from "../../utils/ThemedContainer";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 const { Dragger } = Upload;
 
 export default () => {
+    const [disabled, setDisabled] = useState(false)
+
     const props = {
         name: "file",
         multiple: false,
@@ -31,6 +34,7 @@ export default () => {
         const fmData = new FormData();
         fmData.append("file", file);
         try {
+            setDisabled(true)
             const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/upload/`, {
                 method: "post",
                 body: fmData,
@@ -45,16 +49,18 @@ export default () => {
             } else {
                 const response = await fetchResult.json();
                 onSuccess(response);
+                setDisabled(false)
                 navigate(`/knowledge_bases/${response.knowledge_base}`);
             }
         } catch (e) {
             onError(e);
+            setDisabled(false)
         }
     };
 
     return (
         <ThemedBar>
-            <Dragger {...props} customRequest={loadFile}>
+            <Dragger {...props} customRequest={loadFile} disabled={disabled}>
                 <p className="ant-upload-drag-icon">
                     <InboxOutlined />
                 </p>

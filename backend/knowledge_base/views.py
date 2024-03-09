@@ -43,6 +43,25 @@ class KnowledgeBaseViewSet(ModelViewSet):
         instance = KBService.knowledge_base_to_model(kb, file_name=file.name[:-(len(file_type) + 1)])
         return Response({'success': True, 'knowledge_base': instance.pk})
 
+    @action(methods=['POST'], detail=True, serializer_class=serializers.UploadKBSerializer, parser_classes=[MultiPartParser])
+    def add_upload(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        file = serializer.validated_data.get('file')
+        file_type = file.name.split('.')[-1]
+        if not file.name.endswith('.kbs') and not file.name.endswith('.xml') and not file.name.endswith('.json'):
+            raise exceptions.ValidationError(f'File type ".{file_type}" is not supported')
+        kb = None
+        content = file.open('r').read().decode()
+        if file.name.endswith('.kbs'):
+            kb = KBService.kb_from_krl(content)
+        elif file.name.endswith('.xml'):
+            kb = KBService.kb_from_xml(content)
+        elif file.name.endswith('.json'):
+            kb = KBService.kb_from_json(content)
+        instance = KBService.knowledge_base_to_model(kb, instance)
+        return Response({'success': True, 'knowledge_base': instance.pk})
 
     @action(methods=['GET'], detail=True, serializer_class=serializers.KRLSerializer)
     def krl(self, request, *args, **kwargs):
@@ -73,6 +92,7 @@ class KnowledgeBaseViewSet(ModelViewSet):
         buffer = io.BytesIO(json.dumps(kb.__dict__(), ensure_ascii=False).encode())
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=instance.name+'.json')
+
 
 class KBRelatedMixin:
     def get_queryset(self):

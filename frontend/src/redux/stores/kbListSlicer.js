@@ -8,6 +8,17 @@ export const getKbList = createAsyncThunk("kbList/get", async () => {
     return response;
 });
 
+export const deleteKb = createAsyncThunk("kbList/delete", async ({ id }, { rejectWithValue }) => {
+    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/`, {
+        method: "DELETE",
+    });
+    if (fetchResult.status === 204) {
+        return id;
+    } else {
+        rejectWithValue(fetchResult);
+    }
+});
+
 const kbListSlice = createSlice({
     name: "kbList",
     initialState: {
@@ -40,6 +51,13 @@ const kbListSlice = createSlice({
                 if (state.status === loadStatuses.loaded) {
                     state.knowledgeBases = [...state.knowledgeBases, action.payload.knowledgeBase];
                 }
+            })
+            .addCase(deleteKb.pending, (state) => {
+                state.status = loadStatuses.loading;
+            })
+            .addCase(deleteKb.fulfilled, (state, action) => {
+                state.status = loadStatuses.loaded;
+                state.knowledgeBases = state.knowledgeBases.filter((kb) => parseInt(kb.id) !== parseInt(action.payload));
             });
     },
 });
