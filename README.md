@@ -31,7 +31,12 @@ make start
 docker compose build frontend
 docker compose build backend
 ```
-И тогда снова выполнить `make start`
+И тогда снова выполнить 
+
+```bash
+make build
+make start
+```
 
 ## Дополнительные настройки
 
