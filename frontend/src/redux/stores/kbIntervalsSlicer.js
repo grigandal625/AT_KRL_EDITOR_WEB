@@ -85,11 +85,11 @@ const kbIntervalsSlice = createSlice({
             if (state.timer) {
                 clearTimeout(state.timer);
             }
-            state.timer = setTimeout(update, 1000)
+            state.timer = setTimeout(update, 1000);
         },
         setAutoSaveStatus: (state, action) => {
-            state.autoSaveStatus = action.payload
-        }
+            state.autoSaveStatus = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -107,7 +107,8 @@ const kbIntervalsSlice = createSlice({
             .addCase(createInterval.fulfilled, (state, action) => {
                 state.items.push(action.payload.item);
                 action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/objects/intervals/${action.payload.item.id}`);
-            }).addCase(updateInterval.pending, (state) => {
+            })
+            .addCase(updateInterval.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;
                 state.autoSaveStatus = loadStatuses.loading;
             })
@@ -116,7 +117,8 @@ const kbIntervalsSlice = createSlice({
                 state.autoSaveStatus = loadStatuses.loaded;
                 state.items[index] = action.payload;
                 state.saveStatus = loadStatuses.loaded;
-            }).addCase(deleteInterval.pending, (state) => {
+            })
+            .addCase(deleteInterval.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;
             })
             .addCase(deleteInterval.fulfilled, (state, action) => {

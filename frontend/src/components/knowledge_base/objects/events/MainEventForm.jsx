@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { Form, Input } from "antd";
 import { kbIdFormatValidator, uniqueKbIdValidator } from "../../../../utils/Validators";
 
-export default ({ form, forCreate, ...props }) => {
+export default ({ form, forCreate, onValuesChange, ...props }) => {
     const kbEventsStore = useSelector(selectkbEvents);
     const { eventId } = useParams();
     const eventNames = kbEventsStore.items.filter((e) => (forCreate ? true : e.id !== parseInt(eventId))).map((e) => e.kb_id);
 
     return (
-        <Form form={form} {...props}>
+        <Form form={form} onValuesChange={onValuesChange} {...props}>
             <Form.Item
                 name="kb_id"
                 label="Имя события"

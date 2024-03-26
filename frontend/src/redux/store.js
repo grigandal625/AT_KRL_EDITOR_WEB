@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import kbEventsSlicer from "./stores/kbEventsSlicer";
-import kbItervalsSlicer from "./stores/kbItervalsSlicer";
+import kbIntervalsSlicer from "./stores/kbIntervalsSlicer";
 import kbListSlicer from "./stores/kbListSlicer";
 import kbObjectsSlicer from "./stores/kbObjectsSlicer";
 import kbSlicer from "./stores/kbSlicer";
@@ -14,7 +14,7 @@ export default configureStore({
         kb: kbSlicer,
         kbTypes: kbTypesSlicer,
         kbObjects: kbObjectsSlicer,
-        kbIntervals: kbItervalsSlicer,
+        kbIntervals: kbIntervalsSlicer,
         kbEvents: kbEventsSlicer,
         kbRules: kbRulesSlicer,
     },

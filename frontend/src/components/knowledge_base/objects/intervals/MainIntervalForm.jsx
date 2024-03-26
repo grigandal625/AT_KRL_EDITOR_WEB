@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Form, Input } from "antd";
 import { kbIdFormatValidator, uniqueKbIdValidator } from "../../../../utils/Validators";
-import { selectkbIntervals } from "../../../../redux/stores/kbItervalsSlicer";
+import { selectkbIntervals } from "../../../../redux/stores/kbIntervalsSlicer";
 
 export default ({ form, onValuesChange, forCreate, ...props }) => {
     const kbIntervalsStore = useSelector(selectkbIntervals);

@@ -1,6 +1,6 @@
 import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
@@ -13,22 +13,22 @@ import {
     loadIntervalKrl,
     duplicateInterval,
     setTimer,
-    setAutoSaveStatus,
-} from "../../../../redux/stores/kbItervalsSlicer";
+    setAutoSaveStatus
+} from "../../../../redux/stores/kbIntervalsSlicer";
 import IntervalOpenCloseForm from "./IntervalOpenCloseForm";
 import MainIntervalForm from "./MainIntervalForm";
-import { useState } from "react";
 
 export default () => {
     const { id, intervalId } = useParams();
     const navigate = useNavigate();
     const kbIntervalsStore = useSelector(selectkbIntervals);
     const dispatch = useDispatch();
-    const [autoSaving, setAutoSaving] = useState(false);
+    
     const {
         token: { borderRadius },
     } = theme.useToken();
 
+    const [autoSaving, setAutoSaving] = useState(false);
     useEffect(() => {
         if (autoSaving && kbIntervalsStore.autoSaveStatus === loadStatuses.loaded) {
             setAutoSaving(false);
@@ -94,11 +94,12 @@ export default () => {
     const update = async () => {
         try {
             let data = await form.validateFields();
-            const occurance_condition = await openCloseFrom.validateFields();
-            data = { ...data, ...occurance_condition };
+            const open_close = await openCloseFrom.validateFields();
+            data = { ...data, ...open_close };
             dispatch(updateInterval({ id, intervalId, data }));
         } catch (e) {
-            console.error(e);
+            dispatch(setAutoSaveStatus(loadStatuses.error))
+            setAutoSaving(false);
         }
     };
 

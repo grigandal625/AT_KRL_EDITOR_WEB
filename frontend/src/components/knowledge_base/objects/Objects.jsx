@@ -4,7 +4,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Link, Outlet, useMatches, useParams } from "react-router-dom";
 import { ItemMenu } from "../../../utils/KBItemMenuList";
 import { selectKbObjects } from "../../../redux/stores/kbObjectsSlicer";
-import { selectkbIntervals } from "../../../redux/stores/kbItervalsSlicer";
+import { selectkbIntervals } from "../../../redux/stores/kbIntervalsSlicer";
 import { selectkbEvents } from "../../../redux/stores/kbEventsSlicer";
 
 export default () => {

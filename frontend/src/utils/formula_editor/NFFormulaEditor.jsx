@@ -7,7 +7,7 @@ import { evaluatable, operations, temporal } from "../../GLOBAL";
 import NFWrapper from "./NFWrapper";
 import { selectkbEvents } from "../../redux/stores/kbEventsSlicer";
 import { useSelector } from "react-redux";
-import { selectkbIntervals } from "../../redux/stores/kbItervalsSlicer";
+import { selectkbIntervals } from "../../redux/stores/kbIntervalsSlicer";
 import AllenOperationInput from "./AllenOperationInput";
 
 export const NFReferenceInput = ({ value, onChange }) => (

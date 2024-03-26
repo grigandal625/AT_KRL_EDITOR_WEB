@@ -1,11 +1,11 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined } from "@ant-design/icons";
-import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme } from "antd";
-import { useEffect } from "react";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
 import mobileCheck from "../../../../utils/mobileCheck";
-import { selectkbEvents, updateEvent, resetKrl, deleteEvent, loadEventKrl, duplicateEvent } from "../../../../redux/stores/kbEventsSlicer";
+import { selectkbEvents, updateEvent, resetKrl, deleteEvent, loadEventKrl, duplicateEvent, setTimer, setAutoSaveStatus } from "../../../../redux/stores/kbEventsSlicer";
 import EventOccuranceConditionForm from "./EventOccuranceConditionForm";
 import MainEventForm from "./MainEventForm";
 
@@ -17,6 +17,12 @@ export default () => {
     const {
         token: { borderRadius },
     } = theme.useToken();
+    const [autoSaving, setAutoSaving] = useState(false);
+    useEffect(() => {
+        if (autoSaving && kbEventsStore.autoSaveStatus === loadStatuses.loaded) {
+            setAutoSaving(false);
+        }
+    }, [kbEventsStore.autoSaveStatus]);
 
     const event = kbEventsStore.items.find((e) => parseInt(e.id) === parseInt(eventId));
 
@@ -74,23 +80,38 @@ export default () => {
         preview,
     };
 
-    const saveOccCond = async () => {
+    const update = async () => {
         try {
+            let data = await form.validateFields();
             const occurance_condition = await occCondForm.validateFields();
-            dispatch(updateEvent({ id, eventId, data: occurance_condition }));
+            data = { ...data, ...occurance_condition };
+            dispatch(updateEvent({ id, eventId, data }));
         } catch (e) {
-            console.error(e);
+            dispatch(setAutoSaveStatus(loadStatuses.error));
+            setAutoSaving(false);
         }
     };
 
-    const saveEvent = async () => {
-        try {
-            const data = await form.validateFields();
-            dispatch(updateEvent({ id, eventId, data }));
-        } catch (e) {
-            console.error(e);
-        }
+    const autoSave = () => {
+        setAutoSaving(true);
+        dispatch(setTimer(update));
     };
+
+    const autoSaveStatusElement =
+        kbEventsStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbEventsStore.autoSaveStatus !== loadStatuses.error) ? (
+            <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">Сохранение...</Typography.Text>
+            </Space>
+        ) : kbEventsStore.autoSaveStatus === loadStatuses.error ? (
+            <Tag color="error" icon={<ExclamationCircleOutlined />}>
+                Ошибка сохранения
+            </Tag>
+        ) : (
+            <Tag color="success" icon={<CheckOutlined />}>
+                Данные сохранены
+            </Tag>
+        );
 
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
@@ -120,20 +141,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbEventsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            onClick={saveEvent}
-                                            type="primary"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <MainEventForm layout="vertical" form={form} initialValues={event} />
+                            <MainEventForm layout="vertical" form={form} onValuesChange={autoSave} initialValues={event} />
                         </Card>
                     </Col>
                     <Col xxl={18} xl={14} lg={24} md={24} sm={24} xs={24}>
@@ -142,20 +154,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Атрибуты</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbEventsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            type="primary"
-                                            onClick={saveOccCond}
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <EventOccuranceConditionForm form={occCondForm} />
+                            <EventOccuranceConditionForm form={occCondForm} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                 </Row>

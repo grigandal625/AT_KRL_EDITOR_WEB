@@ -1,6 +1,6 @@
 import { selectkbEvents } from "../../redux/stores/kbEventsSlicer";
 import { useDispatch, useSelector } from "react-redux";
-import { selectkbIntervals } from "../../redux/stores/kbItervalsSlicer";
+import { selectkbIntervals } from "../../redux/stores/kbIntervalsSlicer";
 import { Button, Menu, Popover, Space, Typography } from "antd";
 import { temporal } from "../../GLOBAL";
 import { Link, useParams } from "react-router-dom";

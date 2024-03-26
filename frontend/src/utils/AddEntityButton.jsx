@@ -10,7 +10,7 @@ import MainBaseObjectForm from "../components/knowledge_base/objects/base_object
 import { createObject } from "../redux/stores/kbObjectsSlicer";
 import MainEventForm from "../components/knowledge_base/objects/events/MainEventForm";
 import { createEvent } from "../redux/stores/kbEventsSlicer";
-import { createInterval } from "../redux/stores/kbItervalsSlicer";
+import { createInterval } from "../redux/stores/kbIntervalsSlicer";
 import MainIntervalForm from "../components/knowledge_base/objects/intervals/MainIntervalForm";
 import MainRuleForm from "../components/knowledge_base/rules/MainRuleForm";
 import { createRule } from "../redux/stores/kbRulesSlicer";

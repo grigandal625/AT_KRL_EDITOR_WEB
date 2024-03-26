@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { getKbTypes, selectKbTypes } from "../../../redux/stores/kbTypesSlicer";
 import { getKbObjects, selectKbObjects } from "../../../redux/stores/kbObjectsSlicer";
 import { getKbEvents, selectkbEvents } from "../../../redux/stores/kbEventsSlicer";
-import { getKbIntervals, selectkbIntervals } from "../../../redux/stores/kbItervalsSlicer";
+import { getKbIntervals, selectkbIntervals } from "../../../redux/stores/kbIntervalsSlicer";
 import { getKbRules, selectkbRules } from "../../../redux/stores/kbRulesSlicer";
 import mobileCheck from "../../../utils/mobileCheck";
 
