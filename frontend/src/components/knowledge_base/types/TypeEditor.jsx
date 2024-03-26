@@ -1,37 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-    Button,
-    Form,
-    Skeleton,
-    Row,
-    Col,
-    Typography,
-    Dropdown,
-    Card,
-    Tooltip,
-    Space,
-    theme,
-    message,
-    Modal,
-    Input,
-} from "antd";
+import { Button, Form, Skeleton, Row, Col, Typography, Dropdown, Card, Tooltip, Space, theme, message, Modal, Input, Tag, Spin } from "antd";
 import { loadStatuses } from "../../../GLOBAL";
 import MainTypeForm from "./MainTypeForm";
 import { useEffect, useState } from "react";
 import mobileCheck from "../../../utils/mobileCheck";
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled } from "@ant-design/icons";
+import { CheckOutlined, DeleteOutlined, ExclamationCircleOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled } from "@ant-design/icons";
 import SymbolicTypeValuesForm from "./values/SymbolicTypeValuesForm";
 import NumericTypeValuesForm from "./values/NumericTypeValuesForm";
-import {
-    deleteType,
-    duplicateType,
-    loadTypeKrl,
-    resetKrl,
-    selectKbTypes,
-    setTypeValues,
-    updateType,
-} from "../../../redux/stores/kbTypesSlicer";
+import { deleteType, duplicateType, loadTypeKrl, resetKrl, selectKbTypes, setAutoSaveStatus, setTimer, setTypeValues, updateType } from "../../../redux/stores/kbTypesSlicer";
 import FuzzyTypeValuesForm from "./values/FuzzyTypeValuesForm";
 
 export default () => {
@@ -42,6 +19,7 @@ export default () => {
     const [form] = Form.useForm();
     const [valuesForm] = Form.useForm();
     const [disabled, setDisabled] = useState(false);
+    const [typeUpdated, setTypeUpdated] = useState(false);
     const saveStatus = kbTypesStore.saveStatus;
     const saved = saveStatus == loadStatuses.loaded;
     const saving = !saved;
@@ -49,6 +27,7 @@ export default () => {
         token: { borderRadius, colorWarningText },
     } = theme.useToken();
 
+    const [autoSaving, setAutoSaving] = useState(false);
     const type = kbTypesStore.items.find((t) => parseInt(t.id) === parseInt(typeId));
     useEffect(() => {
         form.setFieldsValue(type);
@@ -57,6 +36,8 @@ export default () => {
 
     useEffect(() => {
         setDisabled(saving);
+        setTypeUpdated(false);
+        setAutoSaving(false);
     }, [saving]);
     useEffect(() => {
         try {
@@ -66,17 +47,27 @@ export default () => {
 
     const update = async () => {
         try {
-            const data = await form.validateFields();
+            let data = await form.validateFields();
+            if (!disabled) {
+                const kt_values_data = await valuesForm.validateFields();
+                data = { ...data, ...kt_values_data };
+            }
             dispatch(updateType({ id, typeId, data }));
-        } catch (e) {}
+        } catch (e) {
+            dispatch(setAutoSaveStatus(loadStatuses.error));
+        }
+    };
+    const autoSave = () => {
+        setAutoSaving(true);
+        dispatch(setTimer(update));
     };
 
-    const setValues = async () => {
-        try {
-            const data = await valuesForm.validateFields();
-            dispatch(setTypeValues({ id, typeId, values: data.kt_values }));
-        } catch (e) {}
-    };
+    // const setValues = async () => {
+    //     try {
+    //         const data = await valuesForm.validateFields();
+    //         dispatch(setTypeValues({ id, typeId, values: data.kt_values }));
+    //     } catch (e) {}
+    // };
 
     const performDelete = () => {
         Modal.confirm({
@@ -125,11 +116,30 @@ export default () => {
             key: "preview",
         },
     ];
+    const optionsMenuProps = { items, onClick: ({ key }) => actions[key]() };
+
     const valuesForms = {
-        1: <SymbolicTypeValuesForm form={valuesForm} disabled={disabled} />,
-        2: <NumericTypeValuesForm form={valuesForm} disabled={disabled} />,
-        3: <FuzzyTypeValuesForm form={valuesForm} disabled={disabled} variableName={type?.kb_id} />,
+        1: <SymbolicTypeValuesForm form={valuesForm} disabled={disabled} onValuesChange={autoSave} />,
+        2: <NumericTypeValuesForm form={valuesForm} disabled={disabled} onValuesChange={autoSave} />,
+        3: <FuzzyTypeValuesForm form={valuesForm} disabled={disabled} variableName={type?.kb_id} onValuesChange={autoSave} />,
     };
+
+    const autoSaveStatusElement =
+        kbTypesStore.autoSaveStatus == loadStatuses.loading || autoSaving ? (
+            <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">Сохранение...</Typography.Text>
+            </Space>
+        ) : kbTypesStore.autoSaveStatus == loadStatuses.error ? (
+            <Tag color="error" icon={<ExclamationCircleOutlined />}>
+                Ошибка сохранения
+            </Tag>
+        ) : (
+            <Tag color="success" icon={<CheckOutlined />}>
+                Данные сохранены
+            </Tag>
+        );
+
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
             {type ? (
@@ -140,13 +150,8 @@ export default () => {
                         </Typography.Title>
                     </Col>
                     <Col>
-                        <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
-                            <Button
-                                type="text"
-                                {...(mobileCheck() ? { size: "small" } : {})}
-                                onClick={(e) => e.preventDefault()}
-                                icon={<SettingOutlined />}
-                            >
+                        <Dropdown menu={optionsMenuProps} trigger={["click"]}>
+                            <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>
                                 Опции
                             </Button>
                         </Dropdown>
@@ -163,16 +168,7 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
-                                    <Col>
-                                        <Button
-                                            onClick={update}
-                                            loading={saving}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            type="primary"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
@@ -183,21 +179,24 @@ export default () => {
                                 showSuffix
                                 onValuesChange={(changed) => {
                                     if (changed.hasOwnProperty("meta")) {
-                                        setDisabled(type.meta !== changed.meta);
+                                        const typeUpdated = type.meta !== changed.meta;
+                                        setTypeUpdated(typeUpdated);
+                                        setDisabled(typeUpdated);
+                                    } else {
+                                        setTypeUpdated(false);
                                     }
+                                    autoSave();
                                 }}
                             />
                         </Card>
                     </Col>
                     <Col xxl={18} xl={14} lg={24} md={24} sm={24} xs={24}>
                         <Tooltip
-                            open={!saving && disabled}
+                            open={typeUpdated}
                             title={
                                 <Space>
                                     <WarningFilled style={{ color: colorWarningText }} />
-                                    <span>
-                                        Изменен базовый тип. При сохранении основных данных все значения будут удалены
-                                    </span>
+                                    <span>Изменен базовый тип. При сохранении основных данных все значения будут удалены</span>
                                 </Space>
                             }
                         >
@@ -206,17 +205,7 @@ export default () => {
                                 title={
                                     <Row wrap={false} align="middle" justify="space-between">
                                         <Col>Значения</Col>
-                                        <Col>
-                                            <Button
-                                                {...(mobileCheck() ? { size: "small" } : {})}
-                                                disabled={disabled}
-                                                type="primary"
-                                                loading={saving}
-                                                onClick={setValues}
-                                            >
-                                                Сохранить
-                                            </Button>
-                                        </Col>
+                                        <Col>{autoSaveStatusElement}</Col>
                                     </Row>
                                 }
                             >
@@ -241,11 +230,7 @@ export default () => {
                     style: { display: "none" },
                 }}
             >
-                {kbTypesStore.krlStatus === loadStatuses.loaded ? (
-                    <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbTypesStore.previewKrl} />
-                ) : (
-                    <Skeleton active />
-                )}
+                {kbTypesStore.krlStatus === loadStatuses.loaded ? <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbTypesStore.previewKrl} /> : <Skeleton active />}
             </Modal>
         </div>
     );

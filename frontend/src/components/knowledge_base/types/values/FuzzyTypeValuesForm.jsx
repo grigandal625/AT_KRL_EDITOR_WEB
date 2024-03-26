@@ -7,7 +7,7 @@ import mobileCheck from "../../../../utils/mobileCheck";
 import { selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
 import MFEditor from "../../../../utils/mf_editor/MFEditor";
 
-export default ({ variableName, ...props }) => {
+export default ({ variableName, onValuesChange, ...props }) => {
     const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
 
@@ -26,7 +26,7 @@ export default ({ variableName, ...props }) => {
     const formProps = { ...defaultProps, ...props };
     const currentForm = formProps.form || form;
     return (
-        <Form {...formProps}>
+        <Form onValuesChange={onValuesChange} {...formProps}>
             <Form.Item name="_check">
                 <Form.List name="kt_values">
                     {(fields, { add, remove }, { errors }) =>

@@ -12,8 +12,10 @@ install = "*"
 drf-spectacular = "*"
 django-cors-headers = "*"
 gunicorn = "*"
-at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
 psycopg2 = "*"
+celery = "*"
+redis = "*"
+at-krl = {git = "git+https://github.com/grigandal625/AT_KRL.git#egg=at-krl"}
 
 [dev-packages]
 autopep8 = "*"

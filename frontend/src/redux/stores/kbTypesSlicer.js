@@ -85,12 +85,24 @@ const kbTypesSlice = createSlice({
         saveStatus: loadStatuses.loaded,
         previewKrl: undefined,
         krlStatus: loadStatuses.initial,
+        timer: undefined,
+        autoSaveStatus: loadStatuses.initial,
     },
     reducers: {
         resetKrl: (state) => {
             state.krlStatus = loadStatuses.initial;
             state.previewKrl = undefined;
         },
+        setTimer: (state, action) => {
+            const update = action.payload;
+            if (state.timer) {
+                clearTimeout(state.timer);
+            }
+            state.timer = setTimeout(update, 1000)
+        },
+        setAutoSaveStatus: (state, action) => {
+            state.autoSaveStatus = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -111,11 +123,13 @@ const kbTypesSlice = createSlice({
             })
             .addCase(updateType.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;
+                state.autoSaveStatus = loadStatuses.loading;
             })
             .addCase(updateType.fulfilled, (state, action) => {
                 const index = state.items.map((t) => t.id).indexOf(action.payload.id);
                 state.items[index] = action.payload;
                 state.saveStatus = loadStatuses.loaded;
+                state.autoSaveStatus = loadStatuses.loaded;
             })
             .addCase(setTypeValues.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;
@@ -168,4 +182,4 @@ export const selectKbTypes = (state) =>
     });
 
 export default kbTypesSlice.reducer;
-export const { resetKrl } = kbTypesSlice.actions;
+export const { resetKrl, setTimer, setAutoSaveStatus } = kbTypesSlice.actions;

@@ -5,8 +5,9 @@ from knowledge_base import models
 
 @admin.register(models.KnowledgeBase)
 class KnowledgeBaseAdmin(admin.ModelAdmin):
-    list_display = 'id', 'name'
+    list_display = 'id', 'name', 'status'
     search_fields = 'name',
+    list_filter = 'status',
 
 
 @admin.register(models.KType)

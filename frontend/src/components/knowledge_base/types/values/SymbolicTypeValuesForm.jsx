@@ -7,7 +7,7 @@ import mobileCheck from "../../../../utils/mobileCheck";
 import { symbolicTypeValuesValidator } from "../../../../utils/Validators";
 import { selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
 
-export default ({ ...props }) => {
+export default ({ onValuesChange, ...props }) => {
     const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
 
@@ -27,7 +27,7 @@ export default ({ ...props }) => {
     const currentForm = formProps.form || form;
     const validator = symbolicTypeValuesValidator(currentForm)
     return (
-        <Form {...formProps}>
+        <Form onValuesChange={onValuesChange} {...formProps}>
             <Form.Item name="_check" rules={[{ validator }]}>
                 <Form.List name="kt_values">
                     {(fields, { add, remove }, { errors }) =>

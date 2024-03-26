@@ -50,7 +50,7 @@ export default () => {
                 const response = await fetchResult.json();
                 onSuccess(response);
                 setDisabled(false)
-                navigate(`/knowledge_bases/${response.knowledge_base}`);
+                navigate(`/knowledge_bases/${response.knowledge_base.id}`);
             }
         } catch (e) {
             onError(e);

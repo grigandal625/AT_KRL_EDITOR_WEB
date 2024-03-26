@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { selectKbTypes } from "../../../redux/stores/kbTypesSlicer";
 
-export default ({ form, showSuffix, forCreate, ...props }) => {
+export default ({ form, showSuffix, forCreate, onValuesChange, ...props }) => {
     const {
         token: { colorWarningText },
     } = theme.useToken();
@@ -16,7 +16,7 @@ export default ({ form, showSuffix, forCreate, ...props }) => {
     const [open, setOpen] = useState();
     const typeNames = kbTypesStore.items.filter((t) => (forCreate ? true : t.id !== parseInt(typeId))).map((t) => t.kb_id)
     return (
-        <Form form={form} {...props}>
+        <Form form={form} onValuesChange={onValuesChange} {...props}>
             <Form.Item
                 label="Имя типа"
                 name="kb_id"

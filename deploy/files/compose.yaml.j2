@@ -31,6 +31,13 @@ services:
       - "{{ env_vars.DB_PORT | default('5432') }}"
     command: -p {{ env_vars.DB_PORT | default('5432') }}
 
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - {{ env_vars.REDIS_PORT | default('6379') }}:{{ env_vars.REDIS_PORT | default('6379') }}
+
   backend:
     <<: *at_krl_backend
     container_name: backend
@@ -88,4 +95,13 @@ services:
     container_name: frontend
     ports:
       - {{ env_vars.FRONTEND_PORT | default('80') }}:{{ env_vars.FRONTEND_PORT | default('80') }}/tcp
+    restart: unless-stopped
+
+  worker:
+    <<: *at_krl_backend
+    container_name: worker
+    command: celery -A at_krl_editor worker -l info
+    depends_on:
+      - migrations
+      - redis
     restart: unless-stopped

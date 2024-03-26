@@ -12,6 +12,7 @@ from xml.etree.ElementTree import tostring
 import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from knowledge_base import tasks
 
 class KnowledgeBaseViewSet(ModelViewSet):
     queryset = models.KnowledgeBase.objects.all()
@@ -32,36 +33,41 @@ class KnowledgeBaseViewSet(ModelViewSet):
         file_type = file.name.split('.')[-1]
         if not file.name.endswith('.kbs') and not file.name.endswith('.xml') and not file.name.endswith('.json'):
             raise exceptions.ValidationError(f'File type ".{file_type}" is not supported')
-        kb = None
         content = file.open('r').read().decode()
+        instance = models.KnowledgeBase.objects.create(
+            name=file.name[:-(len(file_type) + 1)], 
+            status=models.KnowledgeBase.StatusChoices.LOADING
+        )
         if file.name.endswith('.kbs'):
-            kb = KBService.kb_from_krl(content)
+            tasks.kb_from_krl.delay(pk=instance.pk, content=content)
         elif file.name.endswith('.xml'):
-            kb = KBService.kb_from_xml(content)
+            tasks.kb_from_xml.delay(pk=instance.pk, content=content)
         elif file.name.endswith('.json'):
-            kb = KBService.kb_from_json(content)
-        instance = KBService.knowledge_base_to_model(kb, file_name=file.name[:-(len(file_type) + 1)])
-        return Response({'success': True, 'knowledge_base': instance.pk})
+            tasks.kb_from_json.delay(pk=instance.pk, content=content)
+        kb_serializer = serializers.KnowledgeBaseSerializer(instance)
+        return Response({'success': True, 'knowledge_base': kb_serializer.data})
 
     @action(methods=['POST'], detail=True, serializer_class=serializers.UploadKBSerializer, parser_classes=[MultiPartParser])
     def add_upload(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance: models.KnowledgeBase = self.get_object()
+        instance.status = models.KnowledgeBase.StatusChoices.LOADING
+        instance.save()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data.get('file')
         file_type = file.name.split('.')[-1]
         if not file.name.endswith('.kbs') and not file.name.endswith('.xml') and not file.name.endswith('.json'):
             raise exceptions.ValidationError(f'File type ".{file_type}" is not supported')
-        kb = None
+
         content = file.open('r').read().decode()
         if file.name.endswith('.kbs'):
-            kb = KBService.kb_from_krl(content)
+            tasks.kb_from_krl.delay(pk=instance.pk, content=content)
         elif file.name.endswith('.xml'):
-            kb = KBService.kb_from_xml(content)
+            tasks.kb_from_xml.delay(pk=instance.pk, content=content)
         elif file.name.endswith('.json'):
-            kb = KBService.kb_from_json(content)
-        instance = KBService.knowledge_base_to_model(kb, instance)
-        return Response({'success': True, 'knowledge_base': instance.pk})
+            tasks.kb_from_json.delay(pk=instance.pk, content=content)
+        kb_serializer = serializers.KnowledgeBaseSerializer(instance)
+        return Response({'success': True, 'knowledge_base': kb_serializer.data})
 
     @action(methods=['GET'], detail=True, serializer_class=serializers.KRLSerializer)
     def krl(self, request, *args, **kwargs):

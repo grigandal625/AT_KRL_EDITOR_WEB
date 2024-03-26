@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { numericTypeValuesValidator } from "../../../../utils/Validators";
 import { selectKbTypes } from "../../../../redux/stores/kbTypesSlicer";
 
-export default ({ ...props }) => {
+export default ({ onValuesChange, ...props }) => {
     const kbTypesStore = useSelector(selectKbTypes);
     const { id, typeId } = useParams();
 
@@ -25,7 +25,7 @@ export default ({ ...props }) => {
     const currentForm = formProps.form || form;
     const validator = numericTypeValuesValidator(currentForm);
     return (
-        <Form {...formProps}>
+        <Form onValuesChange={onValuesChange} {...formProps}>
             <Form.Item name="_check" rules={[{ validator }]}>
                 <Form.List name="kt_values">
                     {() => [

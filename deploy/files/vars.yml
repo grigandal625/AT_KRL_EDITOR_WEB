@@ -13,3 +13,4 @@ env_vars:
   # Настройки разворачивания
   BACKEND_PORT: 8989
   FRONTEND_PORT: 8787
+  REDIS_PORT: 6379

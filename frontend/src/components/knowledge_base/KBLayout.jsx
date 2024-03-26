@@ -1,4 +1,4 @@
-import { Tabs, Form, Input, Button, Skeleton, Row, Col, Typography, Collapse, Menu } from "antd";
+import { Tabs, Form, Input, Button, Skeleton, Row, Col, Typography, Collapse, Menu, Result, Spin } from "antd";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useMatches, Outlet, useParams, Navigate } from "react-router-dom";
@@ -121,7 +121,35 @@ export default () => {
                         }}
                     />
                     <br />
-                    <Outlet />
+                    {kbStore.knowledgeBase.status == 1 ? (
+                        <Result
+                            status={"info"}
+                            title="Ожидание"
+                            extra={
+                                <>
+                                    <Spin size="large" />
+                                    <Typography.Paragraph>В данный момент осуществляется чтение БЗ из файла</Typography.Paragraph>
+                                </>
+                            }
+                        />
+                    ) : kbStore.knowledgeBase.status == 2 ? (
+                        <Outlet />
+                    ) : (
+                        <Result
+                            status={"error"}
+                            title="Ошибка"
+                            extra={
+                                <>
+                                    <Typography.Paragraph>При чтении БЗ из файла произошла ошибка</Typography.Paragraph>
+                                    <br />
+                                    <br />
+                                    <Typography.Paragraph>
+                                        <code>{kbStore.knowledgeBase.error}</code>
+                                    </Typography.Paragraph>
+                                </>
+                            }
+                        />
+                    )}
                 </>
             ) : (
                 <Skeleton active />

@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getKbList, deleteKb } from "../../redux/stores/kbListSlicer";
 import { useEffect } from "react";
 import ThemedContainer from "../../utils/ThemedContainer";
-import { Table, Skeleton, Typography, Button, Modal, theme } from "antd";
+import { Table, Skeleton, Typography, Button, Modal, theme, Tag, Space } from "antd";
 import { loadStatuses } from "../../GLOBAL";
 import { Link } from "react-router-dom";
 import "./KBList.css";
@@ -38,13 +38,32 @@ export default () => {
     const columns = [
         {
             title: "Название",
-            render: (kb) => (
-                <Link to={`/knowledge_bases/${kb.id}`}>
-                    <Button type="link" icon={<FolderOpenOutlined />}>
-                        {kb.name}
-                    </Button>
-                </Link>
-            ),
+            render: (kb) =>
+                kb.status == 1 ? (
+                    <>
+                        <Button key={kb.id} type="link" loading>
+                            <Space>
+                                {kb.name}
+                                <Tag>чтение из файла</Tag>
+                            </Space>
+                        </Button>
+                    </>
+                ) : kb.status == 2 ? (
+                    <Link to={`/knowledge_bases/${kb.id}`}>
+                        <Button type="link" icon={<FolderOpenOutlined />}>
+                            {kb.name}
+                        </Button>
+                    </Link>
+                ) : (
+                    <Link to={`/knowledge_bases/${kb.id}`}>
+                        <Button type="link" danger icon={<FolderOpenOutlined />}>
+                            <Space>
+                                {kb.name}
+                                <Tag color="red">ошибка</Tag>
+                            </Space>
+                        </Button>
+                    </Link>
+                ),
         },
         { title: "Проблемная область", dataIndex: "problem_area", key: "problem_area" },
         { title: "Удалить", key: "delete", render: (kb) => <Button onClick={() => confirmDelete(kb)} type="text" danger icon={<DeleteOutlined />} /> },

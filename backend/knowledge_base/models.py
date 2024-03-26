@@ -4,10 +4,17 @@ from django.db import models
 
 
 class KnowledgeBase(models.Model):
+    class StatusChoices(models.IntegerChoices):
+        LOADING = 1, 'Загрузка'
+        OK = 2, 'Ок'
+        ERROR = 3, 'Ошибка'
+
     name = models.CharField(max_length=255)
     problem_area = models.TextField(null=True, blank=True, default=None)
     description = models.TextField(null=True, blank=True, default=None)
 
+    status = models.IntegerField(default=StatusChoices.OK, choices=StatusChoices.choices)
+    error = models.TextField(null=True, blank=True, default=None)
 
 class KType(models.Model):
     class MetaTypeChoices(models.IntegerChoices):

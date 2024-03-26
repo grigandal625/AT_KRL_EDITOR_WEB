@@ -168,3 +168,16 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+
+redis_host = os.getenv("REDIS_HOST", "redis")
+redis_port = os.getenv("REDIS_PORT", 6379)
+redis_pass = os.getenv("REDIS_PASS", None)
+
+if redis_pass is not None:
+    CELERY_BROKER_URL = f"redis://:{redis_pass}@{redis_host}:{redis_port}"
+    CELERY_RESULT_BACKEND = f"redis://:{redis_pass}@{redis_host}:{redis_port}"
+else:
+    CELERY_BROKER_URL = f"redis://{redis_host}:{redis_port}"
+    CELERY_RESULT_BACKEND = f"redis://{redis_host}:{redis_port}"
+
+CELERY_IMPORTS = ('knowledge_base.tasks',)

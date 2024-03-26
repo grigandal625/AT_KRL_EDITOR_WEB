@@ -21,9 +21,8 @@ class KnowledgeBaseSerializer(serializers.ModelSerializer):
 class UploadKBSerializer(serializers.Serializer):
     file = serializers.FileField(write_only=True)
     success = serializers.BooleanField(default=True, read_only=True)
-    knowledge_base = serializers.IntegerField(read_only=True)
+    knowledge_base = KnowledgeBaseSerializer(read_only=True)
     
-
 
 class KTypeValueSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +42,26 @@ class KTypeSetValuesSerializer(serializers.ListSerializer):
 
 
 class KTypeSerializer(serializers.ModelSerializer):
-    kt_values = KTypeValueSerializer(many=True, read_only=True)
+    kt_values = KTypeValueSerializer(many=True, required=False)
+
+    def create(self, validated_data):
+        kt_values = validated_data.pop('kt_values', None)
+        instance = super().create(validated_data)
+        self.update_values(instance, kt_values)
+        return instance
+
+    def update(self, instance, validated_data):
+        kt_values = validated_data.pop('kt_values', None)
+        instance = super().update(instance, validated_data)
+        self.update_values(instance, kt_values)
+        return instance
+    
+    def update_values(self, instance: KType, kt_values):
+        if kt_values is not None:
+            serializer = KTypeSetValuesSerializer(data=kt_values)
+            serializer.is_valid(raise_exception=True)
+            instance.kt_values.all().delete()
+            serializer.save(type=instance)
 
     class Meta:
         model = KType
@@ -68,11 +86,30 @@ class KObjectSetAttributesSerializer(serializers.ListSerializer):
 
 
 class KObjectSerializer(serializers.ModelSerializer):
-    ko_attributes = KObjectAttributeSerializer(many=True, read_only=True)
+    ko_attributes = KObjectAttributeSerializer(many=True, required=False)
 
     class Meta:
         model = KObject
         exclude = 'knowledge_base',
+    
+    def create(self, validated_data):
+        ko_attributes = validated_data.pop('ko_attributes', None)
+        instance = super().create(validated_data)
+        self.update_attributes(instance, ko_attributes)
+        return instance
+    
+    def update(self, instance, validated_data):
+        ko_attributes = validated_data.pop('ko_attributes', None)
+        instance = super().update(instance, validated_data)
+        self.update_attributes(instance, ko_attributes)
+        return instance
+
+    def update_attributes(self, instance: KObject, ko_attributes):
+        if ko_attributes is not None:
+            serializer = KObjectSetAttributesSerializer(data=ko_attributes)
+            serializer.is_valid(raise_exception=True)
+            instance.ko_attributes.all().delete()
+            serializer.save(object=instance)
 
 
 class KEventSerializer(serializers.ModelSerializer):
@@ -122,12 +159,36 @@ class KRuleSetElseInstructionsSerializer(serializers.ListSerializer):
 
 
 class KRuleSerializer(serializers.ModelSerializer):
-    kr_instructions = KRuleInstructionSerializer(many=True, read_only=True)
-    kr_else_instructions = KRuleElseInstructionSerializer(many=True, read_only=True)
+    kr_instructions = KRuleInstructionSerializer(many=True, required=False)
+    kr_else_instructions = KRuleElseInstructionSerializer(many=True, required=False)
 
     class Meta:
         model = KRule
         exclude = 'knowledge_base',
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+    
+    def update_all_instrictions(self, instance: KRule, kr_instructions, kr_else_instructions):
+        self.update_instructions(instance, kr_instructions)
+        self.update_else_instructions(instance, kr_else_instructions)
+
+    def update_instructions(self, instance: KRule, kr_instructions):
+        if kr_instructions is not None:
+            serializer = KRuleSetInstructionsSerializer(data=kr_instructions)
+            serializer.is_valid(raise_exception=True)
+            instance.kr_instructions.all().delete()
+            serializer.save(rule=instance)
+
+    def update_else_instructions(self, instance: KRule, kr_else_instructions):
+        if kr_else_instructions is not None:
+            serializer = KRuleSetElseInstructionsSerializer(data=kr_else_instructions)
+            serializer.is_valid(raise_exception=True)
+            instance.kr_else_instructions.all().delete()
+            serializer.save(rule=instance)
 
 
 class KRuleUpdateConditionAndInstructionsSerializer(serializers.ModelSerializer):
