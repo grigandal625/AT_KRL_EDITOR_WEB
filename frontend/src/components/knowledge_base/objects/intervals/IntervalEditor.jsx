@@ -1,22 +1,39 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined } from "@ant-design/icons";
-import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme } from "antd";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
 import mobileCheck from "../../../../utils/mobileCheck";
-import { selectkbIntervals, updateInterval, resetKrl, deleteInterval, loadIntervalKrl, duplicateInterval } from "../../../../redux/stores/kbItervalsSlicer";
+import {
+    selectkbIntervals,
+    updateInterval,
+    resetKrl,
+    deleteInterval,
+    loadIntervalKrl,
+    duplicateInterval,
+    setTimer,
+    setAutoSaveStatus,
+} from "../../../../redux/stores/kbItervalsSlicer";
 import IntervalOpenCloseForm from "./IntervalOpenCloseForm";
 import MainIntervalForm from "./MainIntervalForm";
+import { useState } from "react";
 
 export default () => {
     const { id, intervalId } = useParams();
     const navigate = useNavigate();
     const kbIntervalsStore = useSelector(selectkbIntervals);
     const dispatch = useDispatch();
+    const [autoSaving, setAutoSaving] = useState(false);
     const {
         token: { borderRadius },
     } = theme.useToken();
+
+    useEffect(() => {
+        if (autoSaving && kbIntervalsStore.autoSaveStatus === loadStatuses.loaded) {
+            setAutoSaving(false);
+        }
+    }, [kbIntervalsStore.autoSaveStatus]);
 
     const interval = kbIntervalsStore.items.find((e) => parseInt(e.id) === parseInt(intervalId));
 
@@ -74,23 +91,37 @@ export default () => {
         preview,
     };
 
-    const saveOpenClose = async () => {
+    const update = async () => {
         try {
+            let data = await form.validateFields();
             const occurance_condition = await openCloseFrom.validateFields();
-            dispatch(updateInterval({ id, intervalId, data: occurance_condition }));
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const saveInterval = async () => {
-        try {
-            const data = await form.validateFields();
+            data = { ...data, ...occurance_condition };
             dispatch(updateInterval({ id, intervalId, data }));
         } catch (e) {
             console.error(e);
         }
     };
+
+    const autoSave = () => {
+        setAutoSaving(true);
+        dispatch(setTimer(update));
+    };
+
+    const autoSaveStatusElement =
+        kbIntervalsStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbIntervalsStore.autoSaveStatus !== loadStatuses.error) ? (
+            <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">Сохранение...</Typography.Text>
+            </Space>
+        ) : kbIntervalsStore.autoSaveStatus === loadStatuses.error ? (
+            <Tag color="error" icon={<ExclamationCircleOutlined />}>
+                Ошибка сохранения
+            </Tag>
+        ) : (
+            <Tag color="success" icon={<CheckOutlined />}>
+                Данные сохранены
+            </Tag>
+        );
 
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
@@ -120,20 +151,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbIntervalsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            onClick={saveInterval}
-                                            type="primary"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <MainIntervalForm layout="vertical" form={form} initialValues={interval} />
+                            <MainIntervalForm layout="vertical" form={form} initialValues={interval} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                     <Col xxl={18} xl={14} lg={24} md={24} sm={24} xs={24}>
@@ -142,20 +164,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Атрибуты</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbIntervalsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            type="primary"
-                                            onClick={saveOpenClose}
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <IntervalOpenCloseForm form={openCloseFrom} layout="vertical"/>
+                            <IntervalOpenCloseForm form={openCloseFrom} onValuesChange={autoSave} layout="vertical" />
                         </Card>
                     </Col>
                 </Row>
@@ -175,7 +188,11 @@ export default () => {
                     style: { display: "none" },
                 }}
             >
-                {kbIntervalsStore.krlStatus === loadStatuses.loaded ? <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbIntervalsStore.previewKrl} /> : <Skeleton active />}
+                {kbIntervalsStore.krlStatus === loadStatuses.loaded ? (
+                    <Input.TextArea readOnly style={{ minHeight: 350 }} value={kbIntervalsStore.previewKrl} />
+                ) : (
+                    <Skeleton active />
+                )}
             </Modal>
         </div>
     );

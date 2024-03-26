@@ -72,12 +72,24 @@ const kbIntervalsSlice = createSlice({
         saveStatus: loadStatuses.loaded,
         previewKrl: undefined,
         krlStatus: loadStatuses.initial,
+        timer: undefined,
+        autoSaveStatus: loadStatuses.initial,
     },
     reducers: {
         resetKrl: (state) => {
             state.krlStatus = loadStatuses.initial;
             state.previewKrl = undefined;
         },
+        setTimer: (state, action) => {
+            const update = action.payload;
+            if (state.timer) {
+                clearTimeout(state.timer);
+            }
+            state.timer = setTimeout(update, 1000)
+        },
+        setAutoSaveStatus: (state, action) => {
+            state.autoSaveStatus = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -91,15 +103,17 @@ const kbIntervalsSlice = createSlice({
             })
             .addCase(getKbIntervals.rejected, (state) => {
                 state.status = loadStatuses.error;
-            }).addCase(updateInterval.pending, (state) => {
-                state.saveStatus = loadStatuses.loading;
             })
             .addCase(createInterval.fulfilled, (state, action) => {
                 state.items.push(action.payload.item);
                 action.payload.navigate(`/knowledge_bases/${action.payload.kbId}/objects/intervals/${action.payload.item.id}`);
+            }).addCase(updateInterval.pending, (state) => {
+                state.saveStatus = loadStatuses.loading;
+                state.autoSaveStatus = loadStatuses.loading;
             })
             .addCase(updateInterval.fulfilled, (state, action) => {
                 const index = state.items.map((t) => t.id).indexOf(action.payload.id);
+                state.autoSaveStatus = loadStatuses.loaded;
                 state.items[index] = action.payload;
                 state.saveStatus = loadStatuses.loaded;
             }).addCase(deleteInterval.pending, (state) => {
@@ -141,4 +155,4 @@ export const selectkbIntervals = (state) =>
     });
 
 export default kbIntervalsSlice.reducer;
-export const { resetKrl } = kbIntervalsSlice.actions;
+export const { resetKrl, setTimer, setAutoSaveStatus } = kbIntervalsSlice.actions;

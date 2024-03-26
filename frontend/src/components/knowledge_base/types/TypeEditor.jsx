@@ -125,12 +125,12 @@ export default () => {
     };
 
     const autoSaveStatusElement =
-        kbTypesStore.autoSaveStatus == loadStatuses.loading || autoSaving ? (
+        kbTypesStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbTypesStore.autoSaveStatus !== loadStatuses.error) ? (
             <Space>
                 <Spin size="small" />
                 <Typography.Text type="secondary">Сохранение...</Typography.Text>
             </Space>
-        ) : kbTypesStore.autoSaveStatus == loadStatuses.error ? (
+        ) : kbTypesStore.autoSaveStatus === loadStatuses.error ? (
             <Tag color="error" icon={<ExclamationCircleOutlined />}>
                 Ошибка сохранения
             </Tag>
