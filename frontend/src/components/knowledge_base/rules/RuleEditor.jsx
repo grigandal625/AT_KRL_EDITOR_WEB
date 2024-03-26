@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteRule, duplicateRule, loadRuleKrl, resetKrl, selectkbRules, updateRule, updateRuleCondInstr } from "../../../redux/stores/kbRulesSlicer";
-import { Card, Col, Form, Input, Modal, Row, Skeleton, Typography, theme, Button, Dropdown } from "antd";
+import { deleteRule, duplicateRule, loadRuleKrl, resetKrl, selectkbRules, updateRule, updateRuleCondInstr, setTimer, setAutoSaveStatus } from "../../../redux/stores/kbRulesSlicer";
+import { Card, Col, Form, Input, Modal, Row, Skeleton, Typography, theme, Button, Dropdown, Space, Spin, Tag } from "antd";
 import mobileCheck from "../../../utils/mobileCheck";
 import { loadStatuses } from "../../../GLOBAL";
 import MainRuleForm from "./MainRuleForm";
 import RuleConditionInstructionsForm from "./RuleConditionInstructionsForm";
-import { useEffect } from "react";
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
 export default () => {
     const { id, ruleId } = useParams();
@@ -16,6 +16,13 @@ export default () => {
     const {
         token: { borderRadius },
     } = theme.useToken();
+
+    const [autoSaving, setAutoSaving] = useState(false);
+    useEffect(() => {
+        if (autoSaving && kbRulesStore.autoSaveStatus === loadStatuses.loaded) {
+            setAutoSaving(false);
+        }
+    }, [kbRulesStore.autoSaveStatus]);
 
     const rule = kbRulesStore.items.find((r) => r.id === parseInt(ruleId));
 
@@ -76,23 +83,38 @@ export default () => {
         preview,
     };
 
-    const saveCondInstr = async () => {
+    const update = async () => {
         try {
-            const data = await condInstrFrom.validateFields();
-            dispatch(updateRuleCondInstr({ id, ruleId, data }));
+            let data = await form.validateFields();
+            const cond_instr = await condInstrFrom.validateFields();
+            data = { ...data, ...cond_instr };
+            dispatch(updateRule({ id, ruleId, data }));
         } catch (e) {
-            console.error(e);
+            dispatch(setAutoSaveStatus(loadStatuses.error));
+            setAutoSaving(false);
         }
     };
 
-    const saveRule = async () => {
-        try {
-            const data = await form.validateFields();
-            dispatch(updateRule({ id, ruleId, data }));
-        } catch (e) {
-            console.error(e);
-        }
+    const autoSave = () => {
+        setAutoSaving(true);
+        dispatch(setTimer(update));
     };
+
+    const autoSaveStatusElement =
+        kbRulesStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbRulesStore.autoSaveStatus !== loadStatuses.error) ? (
+            <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">Сохранение...</Typography.Text>
+            </Space>
+        ) : kbRulesStore.autoSaveStatus === loadStatuses.error ? (
+            <Tag color="error" icon={<ExclamationCircleOutlined />}>
+                Ошибка сохранения
+            </Tag>
+        ) : (
+            <Tag color="success" icon={<CheckOutlined />}>
+                Данные сохранены
+            </Tag>
+        );
 
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
@@ -122,20 +144,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbRulesStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            onClick={saveRule}
-                                            type="primary"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <MainRuleForm layout="vertical" form={form} initialValues={rule} />
+                            <MainRuleForm layout="vertical" form={form} initialValues={rule} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                     <Col xxl={18} xl={14} lg={24} md={24} sm={24} xs={24}>
@@ -144,20 +157,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Условия и действия</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbRulesStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            type="primary"
-                                            onClick={saveCondInstr}
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <RuleConditionInstructionsForm form={condInstrFrom} />
+                            <RuleConditionInstructionsForm form={condInstrFrom} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                 </Row>

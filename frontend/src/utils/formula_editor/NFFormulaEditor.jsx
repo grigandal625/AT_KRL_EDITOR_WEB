@@ -1,7 +1,7 @@
 import { ReferenceInput, ValueInput } from "./SimpleFormulaEditor";
 import { useEffect, useState } from "react";
-import { Button, Form, InputNumber, Popover, Slider, Space, message, Tree, TreeSelect, Tooltip } from "antd";
-import { SettingOutlined, DownOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { Button, Space, Tree, TreeSelect, Tooltip } from "antd";
+import { DownOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { ExpressionJSONToTreeItem, getAllKeys, getItemByKey, treeItemToExpressionJSON } from "./TreeTools";
 import { evaluatable, operations, temporal } from "../../GLOBAL";
 import NFWrapper from "./NFWrapper";

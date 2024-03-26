@@ -1,10 +1,20 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined } from "@ant-design/icons";
-import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme } from "antd";
-import { useEffect } from "react";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { loadStatuses } from "../../../../GLOBAL";
-import { duplicateObject, selectKbObjects, setObjectAttrs, updateObject, deleteObject, resetKrl, loadObjectKrl } from "../../../../redux/stores/kbObjectsSlicer";
+import {
+    duplicateObject,
+    selectKbObjects,
+    setObjectAttrs,
+    updateObject,
+    deleteObject,
+    resetKrl,
+    loadObjectKrl,
+    setAutoSaveStatus,
+    setTimer,
+} from "../../../../redux/stores/kbObjectsSlicer";
 import mobileCheck from "../../../../utils/mobileCheck";
 import AttributesForm from "./AttributesForm";
 import MainBaseObjectForm from "./MainBaseObjectForm";
@@ -17,6 +27,13 @@ export default () => {
     const {
         token: { borderRadius },
     } = theme.useToken();
+
+    const [autoSaving, setAutoSaving] = useState(false);
+    useEffect(() => {
+        if (autoSaving && kbObjectsStore.autoSaveStatus === loadStatuses.loaded) {
+            setAutoSaving(false);
+        }
+    }, [kbObjectsStore.autoSaveStatus]);
 
     const object = kbObjectsStore.items.find((o) => parseInt(o.id) === parseInt(objectId));
 
@@ -74,23 +91,38 @@ export default () => {
         preview,
     };
 
-    const saveAttrs = async () => {
+    const update = async () => {
         try {
-            const data = await attrsForm.validateFields();
-            dispatch(setObjectAttrs({ id, objectId, ...data }));
+            let data = await form.validateFields();
+            const attrs = await attrsForm.validateFields();
+            data = { ...data, ...attrs };
+            dispatch(updateObject({ id, objectId, data }));
         } catch (e) {
-            console.error(e);
+            dispatch(setAutoSaveStatus(loadStatuses.error));
+            setAutoSaving(false);
         }
     };
 
-    const saveObj = async () => {
-        try {
-            const data = await form.validateFields();
-            dispatch(updateObject({ id, objectId, data }));
-        } catch (e) {
-            console.error(e);
-        }
+    const autoSave = () => {
+        setAutoSaving(true);
+        dispatch(setTimer(update));
     };
+
+    const autoSaveStatusElement =
+        kbObjectsStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbObjectsStore.autoSaveStatus !== loadStatuses.error) ? (
+            <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">Сохранение...</Typography.Text>
+            </Space>
+        ) : kbObjectsStore.autoSaveStatus === loadStatuses.error ? (
+            <Tag color="error" icon={<ExclamationCircleOutlined />}>
+                Ошибка сохранения
+            </Tag>
+        ) : (
+            <Tag color="success" icon={<CheckOutlined />}>
+                Данные сохранены
+            </Tag>
+        );
 
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
@@ -120,20 +152,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Основные данные</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbObjectsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            onClick={saveObj}
-                                            type="primary"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <MainBaseObjectForm layout="vertical" form={form} initialValues={object} />
+                            <MainBaseObjectForm layout="vertical" form={form} initialValues={object} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                     <Col xxl={18} xl={14} lg={24} md={24} sm={24} xs={24}>
@@ -142,20 +165,11 @@ export default () => {
                             title={
                                 <Row wrap={false} align="middle" justify="space-between">
                                     <Col>Атрибуты</Col>
-                                    <Col>
-                                        <Button
-                                            loading={kbObjectsStore.saveStatus !== loadStatuses.loaded}
-                                            {...(mobileCheck() ? { size: "small" } : {})}
-                                            type="primary"
-                                            onClick={saveAttrs}
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    </Col>
+                                    <Col>{autoSaveStatusElement}</Col>
                                 </Row>
                             }
                         >
-                            <AttributesForm form={attrsForm} />
+                            <AttributesForm form={attrsForm} onValuesChange={autoSave} />
                         </Card>
                     </Col>
                 </Row>

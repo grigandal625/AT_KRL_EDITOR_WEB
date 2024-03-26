@@ -1,7 +1,7 @@
 import { Form, Upload, Button, Skeleton, message, Space } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { updateKb } from "../../../redux/stores/kbSlicer";
+import { updateKb, getKb } from "../../../redux/stores/kbSlicer";
 import { useParams } from "react-router-dom";
 import { apiLocation, loadStatuses } from "../../../GLOBAL";
 import KBForm from "../KBForm";
@@ -46,6 +46,7 @@ export default () => {
             }
             if (info.file.status === "done") {
                 message.success(`Успешно дозагружено`);
+                dispatch(getKb(id))
                 if (parseInt(kbTypesStore.kbId) === parseInt(id) && kbTypesStore.status === loadStatuses.loaded) {
                     dispatch(getKbTypes(id));
                 }

@@ -106,6 +106,9 @@ class KObjectSerializer(serializers.ModelSerializer):
 
     def update_attributes(self, instance: KObject, ko_attributes):
         if ko_attributes is not None:
+            for attr in ko_attributes:
+                if isinstance(attr.get('type'), KType):
+                    attr['type'] = attr.get('type').pk
             serializer = KObjectSetAttributesSerializer(data=ko_attributes)
             serializer.is_valid(raise_exception=True)
             instance.ko_attributes.all().delete()
@@ -167,10 +170,18 @@ class KRuleSerializer(serializers.ModelSerializer):
         exclude = 'knowledge_base',
 
     def create(self, validated_data):
-        return super().create(validated_data)
+        kr_instructions = validated_data.pop('kr_instructions', None)
+        kr_else_instructions = validated_data.pop('kr_else_instructions', None)
+        instance = super().create(validated_data)
+        self.update_all_instrictions(instance, kr_instructions, kr_else_instructions)
+        return instance
     
     def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        kr_instructions = validated_data.pop('kr_instructions', None)
+        kr_else_instructions = validated_data.pop('kr_else_instructions', None)
+        instance = super().update(instance, validated_data)
+        self.update_all_instrictions(instance, kr_instructions, kr_else_instructions)
+        return instance
     
     def update_all_instrictions(self, instance: KRule, kr_instructions, kr_else_instructions):
         self.update_instructions(instance, kr_instructions)

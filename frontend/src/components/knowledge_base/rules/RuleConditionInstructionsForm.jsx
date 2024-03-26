@@ -5,10 +5,18 @@ import { ReferenceInput } from "../../../utils/formula_editor/SimpleFormulaEdito
 import { NFInput, NFValueInput } from "../../../utils/formula_editor/NFWrapper";
 import mobileCheck from "../../../utils/mobileCheck";
 
-export default ({ form, ...props }) => {
+export default ({ form, onValuesChange, ...props }) => {
     return (
-        <Form form={form} layout="vertical" {...props}>
-            <Form.Item name="condition" label="Условие (ЕСЛИ)">
+        <Form form={form} onValuesChange={onValuesChange} layout="vertical" {...props}>
+            <Form.Item
+                name="condition"
+                label="Условие (ЕСЛИ)"
+                rules={[
+                    {
+                        validator: (_, value) => (value?.hasOwnProperty("tag") ? Promise.resolve() : Promise.reject(new Error("Укажите условие правила"))),
+                    },
+                ]}
+            >
                 <NFFormulaEditor />
             </Form.Item>
             <Divider />
@@ -34,11 +42,31 @@ export default ({ form, ...props }) => {
                                         <>
                                             <Space key={key} align="start">
                                                 <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                                <Form.Item name={[name, "data", "ref"]} {...field}>
+                                                <Form.Item
+                                                    name={[name, "data", "ref"]}
+                                                    {...field}
+                                                    rules={[
+                                                        {
+                                                            validator: (_, value) =>
+                                                                value?.id && value?.ref?.id
+                                                                    ? Promise.resolve()
+                                                                    : Promise.reject(new Error("Укажите устанавливаемый атрибут")),
+                                                        },
+                                                    ]}
+                                                >
                                                     <ReferenceInput />
                                                 </Form.Item>
                                                 <b style={{ fontSize: 18 }}>=</b>
-                                                <Form.Item name={[name, "data", "value"]} {...field}>
+                                                <Form.Item
+                                                    name={[name, "data", "value"]}
+                                                    {...field}
+                                                    rules={[
+                                                        {
+                                                            validator: (_, value) =>
+                                                                value?.hasOwnProperty("tag") ? Promise.resolve() : Promise.reject(new Error("Укажите присваиваемое значение")),
+                                                        },
+                                                    ]}
+                                                >
                                                     <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
                                                 </Form.Item>
                                                 <Form.Item name={[name, "data", "non_factor"]} {...field}>
@@ -84,11 +112,31 @@ export default ({ form, ...props }) => {
                                             <Form.Item hidden name={[name, "data", "tag"]} initialValue={"assign"} />
                                             <Space key={key} align="start">
                                                 <Button type="link" icon={<MinusCircleOutlined />} onClick={() => remove(index)} />
-                                                <Form.Item name={[name, "data", "ref"]} {...field}>
+                                                <Form.Item
+                                                    name={[name, "data", "ref"]}
+                                                    rules={[
+                                                        {
+                                                            validator: (_, value) =>
+                                                                value?.id && value?.ref?.id
+                                                                    ? Promise.resolve()
+                                                                    : Promise.reject(new Error("Укажите устанавливаемый атрибут")),
+                                                        },
+                                                    ]}
+                                                    {...field}
+                                                >
                                                     <ReferenceInput />
                                                 </Form.Item>
                                                 <b style={{ fontSize: 18 }}>=</b>
-                                                <Form.Item name={[name, "data", "value"]} {...field}>
+                                                <Form.Item
+                                                    name={[name, "data", "value"]}
+                                                    rules={[
+                                                        {
+                                                            validator: (_, value) =>
+                                                                value?.hasOwnProperty("tag") ? Promise.resolve() : Promise.reject(new Error("Укажите присваиваемое значение")),
+                                                        },
+                                                    ]}
+                                                    {...field}
+                                                >
                                                     <NFFormulaEditor noAllen noScrollOverflow minHeight={40} />
                                                 </Form.Item>
                                                 <Form.Item name={[name, "data", "non_factor"]} {...field}>

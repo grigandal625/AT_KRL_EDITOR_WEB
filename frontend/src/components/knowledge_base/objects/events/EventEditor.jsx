@@ -17,6 +17,7 @@ export default () => {
     const {
         token: { borderRadius },
     } = theme.useToken();
+    
     const [autoSaving, setAutoSaving] = useState(false);
     useEffect(() => {
         if (autoSaving && kbEventsStore.autoSaveStatus === loadStatuses.loaded) {

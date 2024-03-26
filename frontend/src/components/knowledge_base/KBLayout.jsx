@@ -1,4 +1,4 @@
-import { Tabs, Form, Input, Button, Skeleton, Row, Col, Typography, Collapse, Menu, Result, Spin } from "antd";
+import { Button, Skeleton, Typography, Menu, Result, Spin } from "antd";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useMatches, Outlet, useParams, Navigate } from "react-router-dom";
@@ -7,6 +7,13 @@ import { getKb } from "../../redux/stores/kbSlicer";
 import "./KBLayout.css";
 import AddEntityButton from "../../utils/AddEntityButton";
 import mobileCheck from "../../utils/mobileCheck";
+import { ReloadOutlined } from "@ant-design/icons";
+import { getKbTypes, selectKbTypes } from "../../redux/stores/kbTypesSlicer";
+import { getKbObjects, selectKbObjects } from "../../redux/stores/kbObjectsSlicer";
+import { getKbEvents, selectkbEvents } from "../../redux/stores/kbEventsSlicer";
+import { getKbIntervals, selectkbIntervals } from "../../redux/stores/kbIntervalsSlicer";
+import { getKbRules, selectkbRules } from "../../redux/stores/kbRulesSlicer";
+import { loadStatuses } from "../../GLOBAL";
 
 export default () => {
     const matches = useMatches();
@@ -16,6 +23,13 @@ export default () => {
 
     const dispatch = useDispatch();
     const kbStore = useSelector((state) => state.kb);
+
+    const kbTypesStore = useSelector(selectKbTypes);
+    const kbObjectsStore = useSelector(selectKbObjects);
+    const kbEventsStore = useSelector(selectkbEvents);
+    const kbIntervalsStore = useSelector(selectkbIntervals);
+    const kbRulesStore = useSelector(selectkbRules);
+
     useEffect(() => {
         if (!kbStore.knowledgeBase || kbStore.knowledgeBase.id !== parseInt(id)) {
             dispatch(getKb(id));
@@ -128,7 +142,34 @@ export default () => {
                             extra={
                                 <>
                                     <Spin size="large" />
+                                    <br />
+                                    <br />
                                     <Typography.Paragraph>В данный момент осуществляется чтение БЗ из файла</Typography.Paragraph>
+                                    <br />
+                                    <Button
+                                        type="primary"
+                                        icon={<ReloadOutlined />}
+                                        onClick={() => {
+                                            dispatch(getKb(id));
+                                            if (parseInt(kbTypesStore.kbId) === parseInt(id) && kbTypesStore.status === loadStatuses.loaded) {
+                                                dispatch(getKbTypes(id));
+                                            }
+                                            if (parseInt(kbObjectsStore.kbId) === parseInt(id) && kbObjectsStore.status === loadStatuses.loaded) {
+                                                dispatch(getKbObjects(id));
+                                            }
+                                            if (parseInt(kbEventsStore.kbId) === parseInt(id) && kbEventsStore.status === loadStatuses.loaded) {
+                                                dispatch(getKbEvents(id));
+                                            }
+                                            if (parseInt(kbIntervalsStore.kbId) === parseInt(id) && kbIntervalsStore.status === loadStatuses.loaded) {
+                                                dispatch(getKbIntervals(id));
+                                            }
+                                            if (parseInt(kbRulesStore.kbId) === parseInt(id) && kbRulesStore.status === loadStatuses.loaded) {
+                                                dispatch(getKbRules(id));
+                                            }
+                                        }}
+                                    >
+                                        Обновить
+                                    </Button>
                                 </>
                             }
                         />

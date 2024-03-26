@@ -44,7 +44,7 @@ const AttrTypeSelect = ({ value, onChange, types, id }) => {
     );
 };
 
-export default ({ ...props }) => {
+export default ({ onValuesChange, ...props }) => {
     const kbObjectsStore = useSelector(selectKbObjects);
     const kbTypesStore = useSelector(selectKbTypes);
     const { objectId, id } = useParams();
@@ -74,7 +74,7 @@ export default ({ ...props }) => {
     const currentForm = formProps.form || form;
     const validator = baseObjectAttributesValidator(currentForm);
     return (
-        <Form {...formProps}>
+        <Form onValuesChange={onValuesChange} {...formProps}>
             <Form.Item name="_check" rules={[{ validator }]}>
                 <Form.List name="ko_attributes">
                     {(fields, { add, remove }, { errors }) =>
@@ -116,10 +116,10 @@ export default ({ ...props }) => {
                                                             {...field}
                                                             rules={[
                                                                 { required: true, message: "Укажите имя атрибута" },
-                                                                { validator: kbIdFormatValidator },
                                                                 {
                                                                     validator: attrUniqueValidator(currentForm, index),
                                                                 },
+                                                                { validator: kbIdFormatValidator },
                                                             ]}
                                                             name={[index, "kb_id"]}
                                                         >
@@ -132,8 +132,11 @@ export default ({ ...props }) => {
                                                             name={[index, "type"]}
                                                             rules={[
                                                                 {
-                                                                    validator: (_, value) =>
-                                                                        !value || value === "" || value ? Promise.resolve() : Promise.reject(new Error("Укажите тип атрибута")),
+                                                                    validator: (_, value) => {
+                                                                        return !value || value === "" || !types.map((t) => parseInt(t.id)).includes(parseInt(value))
+                                                                            ? Promise.reject(new Error("Укажите тип атрибута"))
+                                                                            : Promise.resolve();
+                                                                    },
                                                                 },
                                                             ]}
                                                         >

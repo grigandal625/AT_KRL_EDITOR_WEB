@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { Form, Input } from "antd";
 import { kbIdFormatValidator, uniqueKbIdValidator } from "../../../utils/Validators";
 
-export default ({ form, forCreate, ...props }) => {
+export default ({ form, onValuesChange, forCreate, ...props }) => {
     const kbRulesStore = useSelector(selectkbRules);
     const { ruleId } = useParams();
     const ruleNames = kbRulesStore.items.filter((e) => (forCreate ? true : e.id !== parseInt(ruleId))).map((e) => e.kb_id);
 
     return (
-        <Form form={form} {...props}>
+        <Form form={form} onValuesChange={onValuesChange} {...props}>
             <Form.Item
                 name="kb_id"
                 label="Имя правила"
