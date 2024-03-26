@@ -1,3 +1,7 @@
+- name: Remove old env file
+  ansible.builtin.file:
+    path: ./.env
+    state: absent
 - name: Fill env vars file for Docker Compose
   community.general.ini_file:
     path: ./.env
