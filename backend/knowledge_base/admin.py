@@ -34,6 +34,18 @@ class KObjectAttributeAdmin(admin.ModelAdmin):
     search_fields = 'kb_id', 'comment'
 
 
+@admin.register(models.KInterval)
+class KIntervalAdmin(admin.ModelAdmin):
+    list_display = 'id', 'kb_id', 'comment', 'knowledge_base'
+    search_fields = 'kb_id', 'comment'
+
+
+@admin.register(models.KEvent)
+class KEventAdmin(admin.ModelAdmin):
+    list_display = 'id', 'kb_id', 'comment', 'knowledge_base'
+    search_fields = 'kb_id', 'comment'
+
+
 @admin.register(models.KRule)
 class KRuleAdmin(admin.ModelAdmin):
     list_display = 'id', 'kb_id', 'comment', 'knowledge_base'
