@@ -87,7 +87,7 @@ class KnowledgeBaseViewSet(ModelViewSet):
     def download_xml(self, request, *args, **kwargs):
         instance = self.get_object()
         kb = KBService.convert_kb(instance)
-        buffer = io.BytesIO(tostring(kb.get_xml()))
+        buffer = io.BytesIO(tostring(kb.get_xml(), encoding='UTF-8'))
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=instance.name+'.xml')
     
