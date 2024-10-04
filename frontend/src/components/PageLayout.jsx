@@ -1,9 +1,10 @@
 import MainMenu, { PageMenu } from "./MainMenu";
 import { Layout, theme, Typography } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import PageHeader from "../utils/PageHeader";
 import { useState } from "react";
 import mobileCheck from "../utils/mobileCheck";
+import { useEffect } from "react";
 
 const { Header, Content, Footer } = Layout;
 
@@ -14,6 +15,16 @@ export default () => {
     } = themeToken;
 
     const [width, setWidth] = useState(80);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        const frameId = window.sessionStorage.getItem("frameId");
+        if (frameId) {
+            const parentOrigin = window.sessionStorage.getItem("parentOrigin") || "*";
+            window.parent.postMessage({ frameId, url: window.location.href }, parentOrigin);
+        }
+    }, [location]);
 
     const content = (
         <Layout style={{ marginLeft: mobileCheck() ? 0 : width, transition: "0.2s" }}>

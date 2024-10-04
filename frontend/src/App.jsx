@@ -19,11 +19,13 @@ import EventEditor from "./components/knowledge_base/objects/events/EventEditor"
 import IntervalEditor from "./components/knowledge_base/objects/intervals/IntervalEditor";
 import RuleEditor from "./components/knowledge_base/rules/RuleEditor";
 import Upload from "./components/knowledge_base/Upload";
+import Token from "./components/Token";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="" element={<PageLayout />} errorElement={<NotFound />}>
             <Route path="" element={<About />} />
+            <Route path="token" element={<Token />} />
             <Route path="knowledge_bases">
                 <Route loader={() => Object({ menuItem: "knowledge_bases" })} path="" element={<KBList />} />
                 <Route loader={() => Object({ menuItem: "new" })} id="new" path="new" element={<NewKB />} />
