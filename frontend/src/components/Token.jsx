@@ -6,6 +6,7 @@ export default () => {
     const [search, _] = useSearchParams();
     const navigate = useNavigate();
     const token = search.get("token");
+    const to = search.get("to") || "/";
     const remember = search.get("remember");
     const frameId = search.get("frame_id");
     const parentOrigin = search.get("parent_origin");
@@ -22,7 +23,7 @@ export default () => {
         if (parentOrigin) {
             window.sessionStorage.setItem("parentOrigin", parentOrigin);
         }
-        navigate("/");
+        navigate(window.decodeURIComponent(to));
     }, []);
 
     return <Result icon={<Spin />} title="Аутентификация..." />;
