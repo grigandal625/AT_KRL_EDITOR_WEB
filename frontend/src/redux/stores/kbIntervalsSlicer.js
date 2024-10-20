@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createFrameActionAsyncThunk } from "../frameActor";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 
 export const getKbIntervals = createAsyncThunk("kbIntervals/get", async (id) => {
@@ -7,7 +8,7 @@ export const getKbIntervals = createAsyncThunk("kbIntervals/get", async (id) => 
     return { items, id: parseInt(id) };
 });
 
-export const createInterval = createAsyncThunk("kbIntervals/create", async ({ id, data, navigate }) => {
+export const createInterval = createFrameActionAsyncThunk("kbIntervals/create", async ({ id, data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/`, {
         method: "POST",
         headers: {
@@ -19,7 +20,7 @@ export const createInterval = createAsyncThunk("kbIntervals/create", async ({ id
     return { item, navigate, kbId: id };
 });
 
-export const updateInterval = createAsyncThunk("kbIntervals/update", async ({ id, intervalId, data }) => {
+export const updateInterval = createFrameActionAsyncThunk("kbIntervals/update", async ({ id, intervalId, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/${intervalId}/`, {
         method: "PATCH",
         headers: {
@@ -31,7 +32,7 @@ export const updateInterval = createAsyncThunk("kbIntervals/update", async ({ id
     return interval;
 });
 
-export const deleteInterval = createAsyncThunk("kbIntervals/delete", async ({ id, intervalId, navigate }) => {
+export const deleteInterval = createFrameActionAsyncThunk("kbIntervals/delete", async ({ id, intervalId, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/${intervalId}/`, {
         method: "DELETE",
         headers: {
@@ -41,7 +42,7 @@ export const deleteInterval = createAsyncThunk("kbIntervals/delete", async ({ id
     return { id, itemId: parseInt(intervalId), navigate };
 });
 
-export const duplicateInterval = createAsyncThunk("kbIntervals/duplicate", async ({ id, intervalId, navigate }) => {
+export const duplicateInterval = createFrameActionAsyncThunk("kbIntervals/duplicate", async ({ id, intervalId, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/${intervalId}/duplicate/`, {
         method: "GET",
         headers: {

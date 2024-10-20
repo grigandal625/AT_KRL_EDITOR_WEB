@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
+import { createFrameActionAsyncThunk } from "../frameActor";
 
 export const getKbObjects = createAsyncThunk("kbObjects/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/`);
@@ -7,7 +8,7 @@ export const getKbObjects = createAsyncThunk("kbObjects/get", async (id) => {
     return { items, id: parseInt(id) };
 });
 
-export const createObject = createAsyncThunk("kbObjects/create", async ({ id, data, navigate }) => {
+export const createObject = createFrameActionAsyncThunk("kbObjects/create", async ({ id, data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/`, {
         method: "POST",
         headers: {
@@ -19,7 +20,7 @@ export const createObject = createAsyncThunk("kbObjects/create", async ({ id, da
     return { item, navigate, kbId: id };
 });
 
-export const updateObject = createAsyncThunk("kbObjects/update", async ({ id, objectId, data }) => {
+export const updateObject = createFrameActionAsyncThunk("kbObjects/update", async ({ id, objectId, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/${objectId}/`, {
         method: "PATCH",
         headers: {
@@ -43,7 +44,7 @@ export const setObjectAttrs = createAsyncThunk("kbObjects/setAttrs", async ({ id
     return { id: parseInt(objectId), attrs };
 });
 
-export const duplicateObject = createAsyncThunk("kbObjects/duplicate", async ({ id, objectId, navigate }) => {
+export const duplicateObject = createFrameActionAsyncThunk("kbObjects/duplicate", async ({ id, objectId, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/${objectId}/duplicate/`, {
         method: "GET",
         headers: {
@@ -54,7 +55,7 @@ export const duplicateObject = createAsyncThunk("kbObjects/duplicate", async ({ 
     return { item, navigate, id };
 });
 
-export const deleteObject = createAsyncThunk('kbObjects/delete', async ({ id, objectId, navigate }) => {
+export const deleteObject = createFrameActionAsyncThunk('kbObjects/delete', async ({ id, objectId, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/${objectId}/`, {
         method: "DELETE",
         headers: {

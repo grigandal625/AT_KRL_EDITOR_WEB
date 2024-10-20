@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
+import { createFrameActionAsyncThunk } from "../frameActor";
 
 export const getKbTypes = createAsyncThunk("kbTypes/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/`);
@@ -7,7 +8,7 @@ export const getKbTypes = createAsyncThunk("kbTypes/get", async (id) => {
     return { items, id: parseInt(id) };
 });
 
-export const createType = createAsyncThunk("kbTypes/create", async ({ id, data, navigate }) => {
+export const createType = createFrameActionAsyncThunk("kbTypes/create", async ({ id, data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/`, {
         method: "POST",
         headers: {
@@ -19,7 +20,7 @@ export const createType = createAsyncThunk("kbTypes/create", async ({ id, data, 
     return { item, navigate, kbId: id };
 });
 
-export const updateType = createAsyncThunk("kbTypes/update", async ({ id, typeId, data }) => {
+export const updateType = createFrameActionAsyncThunk("kbTypes/update", async ({ id, typeId, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/${typeId}/`, {
         method: "PATCH",
         headers: {
@@ -43,7 +44,7 @@ export const setTypeValues = createAsyncThunk("kbTypes/setValues", async ({ id, 
     return { id: parseInt(typeId), values: newValues };
 });
 
-export const deleteType = createAsyncThunk("kbTypes/delete", async ({ id, typeId, data, navigate }) => {
+export const deleteType = createFrameActionAsyncThunk("kbTypes/delete", async ({ id, typeId, data, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/${typeId}/`, {
         method: "DELETE",
         headers: {
@@ -54,7 +55,7 @@ export const deleteType = createAsyncThunk("kbTypes/delete", async ({ id, typeId
     return { id, itemId: parseInt(typeId), navigate };
 });
 
-export const duplicateType = createAsyncThunk("kbTypes/duplicate", async ({ id, typeId, navigate }) => {
+export const duplicateType = createFrameActionAsyncThunk("kbTypes/duplicate", async ({ id, typeId, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/${typeId}/duplicate/`, {
         method: "GET",
         headers: {

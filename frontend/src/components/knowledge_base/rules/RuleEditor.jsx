@@ -7,7 +7,7 @@ import { loadStatuses } from "../../../GLOBAL";
 import MainRuleForm from "./MainRuleForm";
 import RuleConditionInstructionsForm from "./RuleConditionInstructionsForm";
 import { useEffect, useState } from "react";
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined, SaveOutlined } from "@ant-design/icons";
 
 export default () => {
     const { id, ruleId } = useParams();
@@ -96,9 +96,13 @@ export default () => {
     };
 
     const autoSave = () => {
-        setAutoSaving(true);
-        dispatch(setTimer(update));
+        if (!inFrame) {
+            setAutoSaving(true);
+            dispatch(setTimer(update));
+        }
     };
+
+    const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
 
     const autoSaveStatusElement =
         kbRulesStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbRulesStore.autoSaveStatus !== loadStatuses.error) ? (
@@ -125,6 +129,22 @@ export default () => {
                             Правило «{rule.kb_id}»
                         </Typography.Title>
                     </Col>
+                    {inFrame ? (
+                        <Col>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                onClick={() => {
+                                    setAutoSaving(true);
+                                    update();
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </Col>
+                    ) : (
+                        <></>
+                    )}
                     <Col>
                         <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>

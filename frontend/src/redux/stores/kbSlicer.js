@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 import { message } from "antd";
+import { createFrameActionAsyncThunk } from "../frameActor";
 
 export const getKb = createAsyncThunk("knowledgeBase/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/`);
@@ -8,7 +9,7 @@ export const getKb = createAsyncThunk("knowledgeBase/get", async (id) => {
     return response;
 });
 
-export const updateKb = createAsyncThunk("knowledgeBase/update", async ({ id, data }) => {
+export const updateKb = createFrameActionAsyncThunk("knowledgeBase/update", async ({ id, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/`, {
         method: "PATCH",
         headers: {
@@ -20,7 +21,7 @@ export const updateKb = createAsyncThunk("knowledgeBase/update", async ({ id, da
     return response;
 });
 
-export const createKb = createAsyncThunk("knowledgeBase/create", async ({ data, navigate }) => {
+export const createKb = createFrameActionAsyncThunk("knowledgeBase/create", async ({ data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/`, {
         method: "POST",
         headers: {

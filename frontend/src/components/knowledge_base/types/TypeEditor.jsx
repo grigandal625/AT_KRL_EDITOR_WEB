@@ -5,7 +5,7 @@ import { loadStatuses } from "../../../GLOBAL";
 import MainTypeForm from "./MainTypeForm";
 import { useEffect, useState } from "react";
 import mobileCheck from "../../../utils/mobileCheck";
-import { CheckOutlined, DeleteOutlined, ExclamationCircleOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled } from "@ant-design/icons";
+import { CheckOutlined, DeleteOutlined, ExclamationCircleOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled, SaveOutlined } from "@ant-design/icons";
 import SymbolicTypeValuesForm from "./values/SymbolicTypeValuesForm";
 import NumericTypeValuesForm from "./values/NumericTypeValuesForm";
 import { deleteType, duplicateType, loadTypeKrl, resetKrl, selectKbTypes, setAutoSaveStatus, setTimer, setTypeValues, updateType } from "../../../redux/stores/kbTypesSlicer";
@@ -57,10 +57,15 @@ export default () => {
             dispatch(setAutoSaveStatus(loadStatuses.error));
         }
     };
+
     const autoSave = () => {
-        setAutoSaving(true);
-        dispatch(setTimer(update));
+        if (!inFrame) {
+            setAutoSaving(true);
+            dispatch(setTimer(update));
+        }
     };
+
+    const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
 
     // const setValues = async () => {
     //     try {
@@ -149,6 +154,22 @@ export default () => {
                             Тип «{type.kb_id}»
                         </Typography.Title>
                     </Col>
+                    {inFrame ? (
+                        <Col>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                onClick={() => {
+                                    setAutoSaving(true);
+                                    update();
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </Col>
+                    ) : (
+                        <></>
+                    )}
                     <Col>
                         <Dropdown menu={optionsMenuProps} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>

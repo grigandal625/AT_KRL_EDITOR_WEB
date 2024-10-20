@@ -1,4 +1,4 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +17,7 @@ export default () => {
     const {
         token: { borderRadius },
     } = theme.useToken();
-    
+
     const [autoSaving, setAutoSaving] = useState(false);
     useEffect(() => {
         if (autoSaving && kbEventsStore.autoSaveStatus === loadStatuses.loaded) {
@@ -94,9 +94,13 @@ export default () => {
     };
 
     const autoSave = () => {
-        setAutoSaving(true);
-        dispatch(setTimer(update));
+        if (!inFrame) {
+            setAutoSaving(true);
+            dispatch(setTimer(update));
+        }
     };
+
+    const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
 
     const autoSaveStatusElement =
         kbEventsStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbEventsStore.autoSaveStatus !== loadStatuses.error) ? (
@@ -123,6 +127,22 @@ export default () => {
                             Событие «{event.kb_id}»
                         </Typography.Title>
                     </Col>
+                    {inFrame ? (
+                        <Col>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                onClick={() => {
+                                    setAutoSaving(true);
+                                    update();
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </Col>
+                    ) : (
+                        <></>
+                    )}
                     <Col>
                         <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>

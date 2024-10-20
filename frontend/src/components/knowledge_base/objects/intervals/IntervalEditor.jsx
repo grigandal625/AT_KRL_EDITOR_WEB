@@ -1,4 +1,4 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,7 @@ import {
     loadIntervalKrl,
     duplicateInterval,
     setTimer,
-    setAutoSaveStatus
+    setAutoSaveStatus,
 } from "../../../../redux/stores/kbIntervalsSlicer";
 import IntervalOpenCloseForm from "./IntervalOpenCloseForm";
 import MainIntervalForm from "./MainIntervalForm";
@@ -23,7 +23,7 @@ export default () => {
     const navigate = useNavigate();
     const kbIntervalsStore = useSelector(selectkbIntervals);
     const dispatch = useDispatch();
-    
+
     const {
         token: { borderRadius },
     } = theme.useToken();
@@ -98,15 +98,19 @@ export default () => {
             data = { ...data, ...open_close };
             dispatch(updateInterval({ id, intervalId, data }));
         } catch (e) {
-            dispatch(setAutoSaveStatus(loadStatuses.error))
+            dispatch(setAutoSaveStatus(loadStatuses.error));
             setAutoSaving(false);
         }
     };
 
     const autoSave = () => {
-        setAutoSaving(true);
-        dispatch(setTimer(update));
+        if (!inFrame) {
+            setAutoSaving(true);
+            dispatch(setTimer(update));
+        }
     };
+
+    const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
 
     const autoSaveStatusElement =
         kbIntervalsStore.autoSaveStatus === loadStatuses.loading || (autoSaving && kbIntervalsStore.autoSaveStatus !== loadStatuses.error) ? (
@@ -130,9 +134,25 @@ export default () => {
                 <Row wrap={false}>
                     <Col flex="auto">
                         <Typography.Title className="kb-title kbitem-title" level={4}>
-                            Событие «{interval.kb_id}»
+                            Интервал «{interval.kb_id}»
                         </Typography.Title>
                     </Col>
+                    {inFrame ? (
+                        <Col>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                onClick={() => {
+                                    setAutoSaving(true);
+                                    update();
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </Col>
+                    ) : (
+                        <></>
+                    )}
                     <Col>
                         <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>

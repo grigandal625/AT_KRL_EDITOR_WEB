@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createFrameActionAsyncThunk } from "../frameActor";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 
 export const getKbEvents = createAsyncThunk("kbEvents/get", async (id) => {
@@ -7,7 +8,7 @@ export const getKbEvents = createAsyncThunk("kbEvents/get", async (id) => {
     return { items, id: parseInt(id) };
 });
 
-export const createEvent = createAsyncThunk("kbEvents/create", async ({ id, data, navigate }) => {
+export const createEvent = createFrameActionAsyncThunk("kbEvents/create", async ({ id, data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/`, {
         method: "POST",
         headers: {
@@ -19,7 +20,7 @@ export const createEvent = createAsyncThunk("kbEvents/create", async ({ id, data
     return { item, navigate, kbId: id };
 });
 
-export const updateEvent = createAsyncThunk("kbEvents/update", async ({ id, eventId, data }) => {
+export const updateEvent = createFrameActionAsyncThunk("kbEvents/update", async ({ id, eventId, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/`, {
         method: "PATCH",
         headers: {
@@ -31,7 +32,7 @@ export const updateEvent = createAsyncThunk("kbEvents/update", async ({ id, even
     return event;
 });
 
-export const deleteEvent = createAsyncThunk("kbEvents/delete", async ({ id, eventId, navigate }) => {
+export const deleteEvent = createFrameActionAsyncThunk("kbEvents/delete", async ({ id, eventId, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/`, {
         method: "DELETE",
         headers: {
@@ -41,7 +42,7 @@ export const deleteEvent = createAsyncThunk("kbEvents/delete", async ({ id, even
     return { id, itemId: parseInt(eventId), navigate };
 });
 
-export const duplicateEvent = createAsyncThunk("kbEvents/duplicate", async ({ id, eventId, navigate }) => {
+export const duplicateEvent = createFrameActionAsyncThunk("kbEvents/duplicate", async ({ id, eventId, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/${eventId}/duplicate/`, {
         method: "GET",
         headers: {

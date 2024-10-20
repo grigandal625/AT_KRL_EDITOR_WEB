@@ -1,4 +1,4 @@
-import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, CheckOutlined, ExclamationCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { Form, Skeleton, Row, Col, Typography, Dropdown, Button, Card, Input, Modal, theme, Space, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -104,8 +104,10 @@ export default () => {
     };
 
     const autoSave = () => {
-        setAutoSaving(true);
-        dispatch(setTimer(update));
+        if (!inFrame) {
+            setAutoSaving(true);
+            dispatch(setTimer(update));
+        }
     };
 
     const autoSaveStatusElement =
@@ -124,6 +126,8 @@ export default () => {
             </Tag>
         );
 
+    const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
+
     return (
         <div className={mobileCheck() ? "" : "container"} style={{ paddingTop: 0 }}>
             {object ? (
@@ -133,6 +137,22 @@ export default () => {
                             Объект «{object.kb_id}»
                         </Typography.Title>
                     </Col>
+                    {inFrame ? (
+                        <Col>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                onClick={() => {
+                                    setAutoSaving(true);
+                                    update();
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </Col>
+                    ) : (
+                        <></>
+                    )}
                     <Col>
                         <Dropdown menu={{ items, onClick: ({ key }) => actions[key]() }} trigger={["click"]}>
                             <Button type="text" {...(mobileCheck() ? { size: "small" } : {})} onClick={(e) => e.preventDefault()} icon={<SettingOutlined />}>

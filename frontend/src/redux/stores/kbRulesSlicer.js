@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
+import { createFrameActionAsyncThunk } from "../frameActor";
 
 export const getKbRules = createAsyncThunk("kbRules/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/`);
@@ -7,7 +8,7 @@ export const getKbRules = createAsyncThunk("kbRules/get", async (id) => {
     return { items, id: parseInt(id) };
 });
 
-export const createRule = createAsyncThunk("kbRules/create", async ({ id, data, navigate }) => {
+export const createRule = createFrameActionAsyncThunk("kbRules/create", async ({ id, data, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/`, {
         method: "POST",
         headers: {
@@ -19,7 +20,7 @@ export const createRule = createAsyncThunk("kbRules/create", async ({ id, data, 
     return { item, navigate, kbId: id };
 });
 
-export const updateRule = createAsyncThunk("kbRules/update", async ({ id, ruleId, data }) => {
+export const updateRule = createFrameActionAsyncThunk("kbRules/update", async ({ id, ruleId, data }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/${ruleId}/`, {
         method: "PATCH",
         headers: {
@@ -43,7 +44,7 @@ export const updateRuleCondInstr = createAsyncThunk("kbRules/updateRuleCondInstr
     return rule;
 });
 
-export const deleteRule = createAsyncThunk("kbRules/delete", async ({ id, ruleId, navigate }) => {
+export const deleteRule = createFrameActionAsyncThunk("kbRules/delete", async ({ id, ruleId, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/${ruleId}/`, {
         method: "DELETE",
         headers: {
@@ -53,7 +54,7 @@ export const deleteRule = createAsyncThunk("kbRules/delete", async ({ id, ruleId
     return { id, itemId: parseInt(ruleId), navigate };
 });
 
-export const duplicateRule = createAsyncThunk("kbRules/duplicate", async ({ id, ruleId, navigate }) => {
+export const duplicateRule = createFrameActionAsyncThunk("kbRules/duplicate", async ({ id, ruleId, navigate }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/${ruleId}/duplicate/`, {
         method: "GET",
         headers: {
