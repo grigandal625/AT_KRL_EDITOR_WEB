@@ -22,19 +22,21 @@ export default () => {
         const frameId = window.sessionStorage.getItem("frameId");
         if (frameId) {
             const parentOrigin = window.sessionStorage.getItem("parentOrigin") || "*";
-            window.parent.postMessage({ frameId, url: window.location.href }, parentOrigin);
+            window.parent.postMessage({ type: "urlUpdate", frameId, url: window.location.href }, parentOrigin);
         }
     }, [location]);
 
     const content = (
         <Layout style={{ marginLeft: mobileCheck() ? 0 : width, transition: "0.2s" }}>
-            <Header style={{ padding: 0, background: colorBgContainer }}>
-                {mobileCheck() ? <PageMenu /> : <PageHeader title="Редактор базы знаний" />}
-            </Header>
+            <Header style={{ padding: 0, background: colorBgContainer }}>{mobileCheck() ? <PageMenu /> : <PageHeader title="Редактор базы знаний" />}</Header>
             <Content
-                style={mobileCheck() ? {} : {
-                    margin: "0 16px",
-                }}
+                style={
+                    mobileCheck()
+                        ? {}
+                        : {
+                              margin: "0 16px",
+                          }
+                }
             >
                 <Outlet />
             </Content>
