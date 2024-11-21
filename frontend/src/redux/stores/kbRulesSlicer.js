@@ -32,18 +32,6 @@ export const updateRule = createFrameActionAsyncThunk("kbRules/update", async ({
     return rule;
 });
 
-export const updateRuleCondInstr = createAsyncThunk("kbRules/updateRuleCondInstr", async ({ id, ruleId, data }) => {
-    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/${ruleId}/update_condition_and_instructions/`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-    const rule = await fetchResult.json();
-    return rule;
-});
-
 export const deleteRule = createFrameActionAsyncThunk("kbRules/delete", async ({ id, ruleId, navigate }) => {
     await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_rules/${ruleId}/`, {
         method: "DELETE",
@@ -130,13 +118,6 @@ const kbRulesSlice = createSlice({
                 state.items[index] = action.payload;
                 state.saveStatus = loadStatuses.loaded;
                 state.autoSaveStatus = loadStatuses.loaded;
-            })
-            .addCase(updateRuleCondInstr.pending, (state) => {
-                state.saveStatus = loadStatuses.loading;
-            })
-            .addCase(updateRuleCondInstr.fulfilled, (state, action) => {
-                state.items = state.items.map((item) => (item.id === action.payload.id ? { ...item, ...action.payload } : item));
-                state.saveStatus = loadStatuses.loaded;
             })
             .addCase(deleteRule.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;

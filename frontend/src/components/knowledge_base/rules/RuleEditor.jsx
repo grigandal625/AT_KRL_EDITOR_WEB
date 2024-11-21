@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteRule, duplicateRule, loadRuleKrl, resetKrl, selectkbRules, updateRule, updateRuleCondInstr, setTimer, setAutoSaveStatus } from "../../../redux/stores/kbRulesSlicer";
+import { deleteRule, duplicateRule, loadRuleKrl, resetKrl, selectkbRules, updateRule, setTimer, setAutoSaveStatus } from "../../../redux/stores/kbRulesSlicer";
 import { Card, Col, Form, Input, Modal, Row, Skeleton, Typography, theme, Button, Dropdown, Space, Spin, Tag } from "antd";
 import mobileCheck from "../../../utils/mobileCheck";
 import { loadStatuses } from "../../../GLOBAL";

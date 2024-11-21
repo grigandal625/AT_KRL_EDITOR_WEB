@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 import { createKb, updateKb } from "./kbSlicer";
+import { createFrameActionAsyncThunk } from "../frameActor";
 
 export const getKbList = createAsyncThunk("kbList/get", async () => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/`);
@@ -8,7 +9,7 @@ export const getKbList = createAsyncThunk("kbList/get", async () => {
     return response;
 });
 
-export const deleteKb = createAsyncThunk("kbList/delete", async ({ id }, { rejectWithValue }) => {
+export const deleteKb = createFrameActionAsyncThunk("kbList/delete", async ({ id }, { rejectWithValue }) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/`, {
         method: "DELETE",
     });

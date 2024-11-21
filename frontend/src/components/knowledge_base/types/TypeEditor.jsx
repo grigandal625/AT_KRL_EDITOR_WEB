@@ -8,7 +8,7 @@ import mobileCheck from "../../../utils/mobileCheck";
 import { CheckOutlined, DeleteOutlined, ExclamationCircleOutlined, FileAddOutlined, FolderViewOutlined, SettingOutlined, WarningFilled, SaveOutlined } from "@ant-design/icons";
 import SymbolicTypeValuesForm from "./values/SymbolicTypeValuesForm";
 import NumericTypeValuesForm from "./values/NumericTypeValuesForm";
-import { deleteType, duplicateType, loadTypeKrl, resetKrl, selectKbTypes, setAutoSaveStatus, setTimer, setTypeValues, updateType } from "../../../redux/stores/kbTypesSlicer";
+import { deleteType, duplicateType, loadTypeKrl, resetKrl, selectKbTypes, setAutoSaveStatus, setTimer, updateType } from "../../../redux/stores/kbTypesSlicer";
 import FuzzyTypeValuesForm from "./values/FuzzyTypeValuesForm";
 
 export default () => {
@@ -66,13 +66,6 @@ export default () => {
     };
 
     const inFrame = Boolean(window.sessionStorage.getItem("frameId"));
-
-    // const setValues = async () => {
-    //     try {
-    //         const data = await valuesForm.validateFields();
-    //         dispatch(setTypeValues({ id, typeId, values: data.kt_values }));
-    //     } catch (e) {}
-    // };
 
     const performDelete = () => {
         Modal.confirm({

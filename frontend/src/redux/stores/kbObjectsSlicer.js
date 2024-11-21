@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 import { createFrameActionAsyncThunk } from "../frameActor";
 
-export const getKbObjects = createAsyncThunk("kbObjects/get", async (id) => {
+export const getKbObjects = createFrameActionAsyncThunk("kbObjects/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/`);
     const items = await fetchResult.json();
     return { items, id: parseInt(id) };
@@ -30,18 +30,6 @@ export const updateObject = createFrameActionAsyncThunk("kbObjects/update", asyn
     });
     const object = await fetchResult.json();
     return object;
-});
-
-export const setObjectAttrs = createAsyncThunk("kbObjects/setAttrs", async ({ id, objectId, ko_attributes }) => {
-    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_objects/${objectId}/set_attributes/`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(ko_attributes),
-    });
-    const attrs = await fetchResult.json();
-    return { id: parseInt(objectId), attrs };
 });
 
 export const duplicateObject = createFrameActionAsyncThunk("kbObjects/duplicate", async ({ id, objectId, navigate }) => {
@@ -131,18 +119,7 @@ const kbObjectsSlice = createSlice({
                 state.saveStatus = loadStatuses.loaded;
                 state.autoSaveStatus = loadStatuses.loaded;
             })
-            .addCase(setObjectAttrs.pending, (state) => {
-                state.saveStatus = loadStatuses.loading;
-            })
-            .addCase(setObjectAttrs.fulfilled, (state, action) => {
-                const index = state.items.map((t) => t.id).indexOf(action.payload.id);
-                const newObject = {
-                    ...state.items.find((t) => t.id === action.payload.id),
-                    ko_attributes: action.payload.attrs,
-                };
-                state.items[index] = newObject;
-                state.saveStatus = loadStatuses.loaded;
-            }).addCase(duplicateObject.pending, (state) => {
+            .addCase(duplicateObject.pending, (state) => {
                 state.status = loadStatuses.loading;
             })
             .addCase(duplicateObject.fulfilled, (state, action) => {

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createFrameActionAsyncThunk } from "../frameActor";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 
-export const getKbEvents = createAsyncThunk("kbEvents/get", async (id) => {
+export const getKbEvents = createFrameActionAsyncThunk("kbEvents/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_events/`);
     const items = await fetchResult.json();
     return { items, id: parseInt(id) };

@@ -7,7 +7,6 @@ import { loadStatuses } from "../../../../GLOBAL";
 import {
     duplicateObject,
     selectKbObjects,
-    setObjectAttrs,
     updateObject,
     deleteObject,
     resetKrl,

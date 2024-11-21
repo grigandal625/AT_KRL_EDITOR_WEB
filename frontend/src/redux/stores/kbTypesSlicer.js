@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 import { createFrameActionAsyncThunk } from "../frameActor";
 
-export const getKbTypes = createAsyncThunk("kbTypes/get", async (id) => {
+export const getKbTypes = createFrameActionAsyncThunk("kbTypes/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/`);
     const items = await fetchResult.json();
     return { items, id: parseInt(id) };
@@ -30,18 +30,6 @@ export const updateType = createFrameActionAsyncThunk("kbTypes/update", async ({
     });
     const type = await fetchResult.json();
     return type;
-});
-
-export const setTypeValues = createAsyncThunk("kbTypes/setValues", async ({ id, typeId, values }) => {
-    const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_types/${typeId}/set_values/`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-    });
-    const newValues = await fetchResult.json();
-    return { id: parseInt(typeId), values: newValues };
 });
 
 export const deleteType = createFrameActionAsyncThunk("kbTypes/delete", async ({ id, typeId, data, navigate }) => {
@@ -131,18 +119,6 @@ const kbTypesSlice = createSlice({
                 state.items[index] = action.payload;
                 state.saveStatus = loadStatuses.loaded;
                 state.autoSaveStatus = loadStatuses.loaded;
-            })
-            .addCase(setTypeValues.pending, (state) => {
-                state.saveStatus = loadStatuses.loading;
-            })
-            .addCase(setTypeValues.fulfilled, (state, action) => {
-                const index = state.items.map((t) => t.id).indexOf(action.payload.id);
-                const newType = {
-                    ...state.items.find((t) => t.id === action.payload.id),
-                    kt_values: action.payload.values,
-                };
-                state.items[index] = newType;
-                state.saveStatus = loadStatuses.loaded;
             })
             .addCase(deleteType.pending, (state) => {
                 state.saveStatus = loadStatuses.loading;

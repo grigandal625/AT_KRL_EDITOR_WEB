@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createFrameActionAsyncThunk } from "../frameActor";
 import { apiLocation, loadStatuses } from "../../GLOBAL";
 
-export const getKbIntervals = createAsyncThunk("kbIntervals/get", async (id) => {
+export const getKbIntervals = createFrameActionAsyncThunk("kbIntervals/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/k_intervals/`);
     const items = await fetchResult.json();
     return { items, id: parseInt(id) };

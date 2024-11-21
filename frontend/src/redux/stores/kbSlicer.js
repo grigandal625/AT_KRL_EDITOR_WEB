@@ -3,7 +3,7 @@ import { apiLocation, loadStatuses } from "../../GLOBAL";
 import { message } from "antd";
 import { createFrameActionAsyncThunk } from "../frameActor";
 
-export const getKb = createAsyncThunk("knowledgeBase/get", async (id) => {
+export const getKb = createFrameActionAsyncThunk("knowledgeBase/get", async (id) => {
     const fetchResult = await fetch(`${apiLocation}/api/knowledge_bases/${id}/`);
     const response = await fetchResult.json();
     return response;

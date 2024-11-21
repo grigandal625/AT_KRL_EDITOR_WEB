@@ -6,6 +6,7 @@ RUN npm install
 
 COPY ./frontend/ ./
 COPY ./.env ./
+RUN ls
 RUN npm run build
 
 FROM nginx:latest as production-stage
